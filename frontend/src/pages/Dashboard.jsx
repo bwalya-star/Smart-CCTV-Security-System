@@ -3,7 +3,7 @@ import AlertCard from "../components/AlertCard";
 import CameraPanel from "../components/CameraPanel";
 import LatestCapture from "../components/LatestCapture";
 
-function Dashboard() {
+function Dashboard({ user, onLogout }) {
     const { alerts, loading } = useAlerts();
 
     if (loading) {
@@ -26,6 +26,27 @@ function Dashboard() {
             <h1 className="dashboard-title">
                 🛡 Smart CCTV Security Dashboard
             </h1>
+
+            <div className="dashboard-user">
+
+            <div>
+                <strong>
+                    {user?.name}
+                </strong>
+
+                <span>
+                    {user?.email}
+                </span>
+            </div>
+
+            <button
+                onClick={onLogout}
+                className="logout-button"
+            >
+                Logout
+            </button>
+
+        </div>
 
             <div className="status-banner">
                 🟢 System Online

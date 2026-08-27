@@ -1,5 +1,6 @@
 const { spawn } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 let recording = false;
 let cameraProcess = null;
@@ -54,6 +55,19 @@ function startRecording(req, res) {
     console.log(
         "Starting Python camera service..."
     );
+
+    const fs = require("fs");
+
+    const stopFile = path.join(
+        projectRoot,
+        "hardware",
+        "camera",
+        "STOP_RECORDING"
+    );
+
+        if (fs.existsSync(stopFile)) {
+            fs.unlinkSync(stopFile);
+        }
 
 
     cameraProcess = spawn(
@@ -139,21 +153,102 @@ function stopRecording(req, res) {
     );
 
 
-    cameraProcess.stdin.write("\x03");
+    const projectRoot = path.join(
+        __dirname,
+        "../../../"
+    );
 
 
-    cameraProcess = null;
+    const stopFile = path.join(
+        projectRoot,
+        "hardware",
+        "camera",
+        "STOP_RECORDING"
+    );
 
-    recording = false;
+
+    try {
+
+        // Tell Python to stop recording
+        fs.writeFileSync(
+            stopFile,
+            "STOP"
+        );
 
 
-    res.json({
+        console.log(
+            "Stop command sent to Python."
+        );
 
-        message: "Recording stopped",
 
-        recording: false
+        // Do NOT kill Python immediately.
+        // Give it time to release OpenCV.
+        const processToWaitFor = cameraProcess;
 
-    });
+
+        const timeout = setTimeout(() => {
+
+            if (
+                cameraProcess === processToWaitFor
+            ) {
+
+                console.log(
+                    "Python camera service did not stop within the expected time."
+                );
+
+                cameraProcess.kill();
+
+                cameraProcess = null;
+
+                recording = false;
+
+            }
+
+        }, 5000);
+
+
+        processToWaitFor.once(
+            "close",
+            () => {
+
+                clearTimeout(timeout);
+
+                console.log(
+                    "Python camera service stopped cleanly."
+                );
+
+                cameraProcess = null;
+
+                recording = false;
+
+            }
+        );
+
+
+        res.json({
+
+            message: "Recording stopped",
+
+            recording: false
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error stopping camera:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            error: "Failed to stop recording"
+
+        });
+
+    }
 
 }
 

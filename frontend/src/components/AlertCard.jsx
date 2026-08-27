@@ -1,37 +1,51 @@
+const API_URL = "http://localhost:5000";
+
 function AlertCard({ alert }) {
+
+    const imageUrl = alert.image_path
+        ? `${API_URL}${alert.image_path}`
+        : null;
 
     return (
         <div className="alert-card">
 
-            <div className="alert-header">
+            <div className="alert-information">
 
                 <h3>
-                    {alert.status === "threat"
-                        ? "⚠ Threat Detected"
-                        : "✓ Safe Event"}
+                    {alert.label || "Security Event"}
                 </h3>
+
+                <p>
+                    Status: {alert.status}
+                </p>
+
+                <p>
+                    Confidence:{" "}
+                    {alert.confidence
+                        ? `${Math.round(
+                            alert.confidence * 100
+                        )}%`
+                        : "N/A"}
+                </p>
+
+                <p>
+                    {new Date(
+                        alert.created_at
+                    ).toLocaleString()}
+                </p>
 
             </div>
 
-            <p>
-                <strong>Detection:</strong>{" "}
-                {alert.detected ? "Person Detected" : "No Person"}
-            </p>
 
-            <p>
-                <strong>Confidence:</strong>{" "}
-                {(alert.confidence * 100).toFixed(0)}%
-            </p>
+            {imageUrl && (
 
-            <p>
-                <strong>Image:</strong>{" "}
-                {alert.image_path}
-            </p>
+                <img
+                    src={imageUrl}
+                    alt="Captured security event"
+                    className="alert-image"
+                />
 
-            <p>
-                <strong>Timestamp:</strong>{" "}
-                {new Date(alert.created_at).toLocaleString()}
-            </p>
+            )}
 
         </div>
     );

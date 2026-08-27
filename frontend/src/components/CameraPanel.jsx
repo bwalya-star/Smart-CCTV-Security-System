@@ -144,21 +144,11 @@ function CameraPanel() {
 
             <div className="camera-view">
 
-                <div className="camera-placeholder">
-
-                    <div className="camera-icon">
-                        📹
-                    </div>
-
-                    <p>
-                        Camera Preview
-                    </p>
-
-                    <small>
-                        Camera is ready
-                    </small>
-
-                </div>
+                <img
+                    src="http://127.0.0.1:8000/video"
+                    alt="Live security camera"
+                    className="camera-feed"
+                />
 
             </div>
 

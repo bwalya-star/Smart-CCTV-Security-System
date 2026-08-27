@@ -6,6 +6,7 @@ const path = require('path');
 require('dotenv').config();
 
 const alertRoutes = require('./routes/alertRoutes');
+const authRoutes = require('./routes/authRoutes');
 const cameraRoutes = require('./routes/cameraRoutes');
 
 const app = express();
@@ -41,6 +42,7 @@ app.use(
 // Routes
 app.use('/api/alerts', alertRoutes); // support API prefix
 app.use('/alerts', alertRoutes); // backward-compatible route
+app.use('/api/auth', authRoutes);
 app.use('/api/camera', cameraRoutes); 
 
 app.get('/', (req, res) => {

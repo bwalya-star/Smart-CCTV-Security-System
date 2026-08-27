@@ -49,10 +49,14 @@ async function handleAlert(req, res) {
         const detected = result.detected;
 
         const confidence =
-            result.confidence || 0.85;
+            result.confidence;
 
         const status =
-            detected ? "threat" : "safe";
+            result.status || (
+                detected
+                    ? "threat"
+                    : "safe"
+            );
 
 
         // ==============================
@@ -85,9 +89,16 @@ async function handleAlert(req, res) {
 
                 status: status,
 
-                label: result.label || "unknown",
+                label:
+                    result.label ||
+                    "unknown",
 
-                created_at: new Date()
+                detections:
+                    result.detections ||
+                    [],
+
+                created_at:
+                    new Date()
 
             });
 

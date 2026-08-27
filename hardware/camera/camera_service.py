@@ -1,4 +1,4 @@
-import sys
+import os
 import time
 from recorder import CameraRecorder
 
@@ -6,7 +6,26 @@ from recorder import CameraRecorder
 recorder = CameraRecorder()
 
 
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../.."
+    )
+)
+
+STOP_FILE = os.path.join(
+    PROJECT_ROOT,
+    "hardware",
+    "camera",
+    "STOP_RECORDING"
+)
+
+
 def start_recording():
+
+    # Remove old stop command
+    if os.path.exists(STOP_FILE):
+        os.remove(STOP_FILE)
 
     success = recorder.start_recording()
 
@@ -30,20 +49,26 @@ def start_recording():
 
         while recorder.recording:
 
+            # Check whether Node.js requested STOP
+            if os.path.exists(STOP_FILE):
+
+                print(
+                    "STOP command received.",
+                    flush=True
+                )
+
+                os.remove(STOP_FILE)
+
+                break
+
+
             success = recorder.record_frame()
 
             if not success:
                 break
 
+
             time.sleep(0.01)
-
-
-    except KeyboardInterrupt:
-
-        print(
-            "Recording interrupted.",
-            flush=True
-        )
 
 
     finally:
@@ -51,6 +76,7 @@ def start_recording():
         if recorder.recording:
 
             recorder.stop_recording()
+
 
         print(
             "RECORDING_STOPPED",

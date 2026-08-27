@@ -11,13 +11,14 @@ sys.path.append(
     )
 )
 
-from camera.capture import capture_image
 
 
 PORT = "COM7"
 BAUD_RATE = 9600
 
-BACKEND_URL = "http://127.0.0.1:5000/api/alerts"
+CAMERA_URL = "http://127.0.0.1:8000/capture"
+
+BACKEND_URL = "http://localhost:5000/api/alerts"
 
 
 def find_serial_port():
@@ -114,6 +115,65 @@ def send_alert_to_backend(image_path):
         return False
 
 
+def capture_from_camera_manager():
+
+    try:
+
+        print(
+            "Requesting image from Camera Manager..."
+        )
+
+        response = requests.post(
+            CAMERA_URL,
+            timeout=15
+        )
+
+
+        if response.status_code != 200:
+
+            print(
+                f"Camera Manager error: "
+                f"{response.status_code}"
+            )
+
+            return None
+
+
+        data = response.json()
+
+
+        if not data.get("success"):
+
+            print(
+                "Camera Manager failed to capture image."
+            )
+
+            return None
+
+
+        image_path = data.get(
+            "imagePath"
+        )
+
+
+        print(
+            f"Image captured: {image_path}"
+        )
+
+
+        return image_path
+
+
+    except requests.RequestException as error:
+
+        print(
+            f"Could not contact Camera Manager: "
+            f"{error}"
+        )
+
+        return None
+
+
 def main():
 
     ser = open_serial()
@@ -156,8 +216,7 @@ def main():
                     "Motion detected!"
                 )
 
-                # Capture image
-                image_path = capture_image()
+                image_path = capture_from_camera_manager()
 
                 if image_path:
 

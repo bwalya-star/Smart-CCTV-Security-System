@@ -1,35 +1,24 @@
 function LatestCapture({ alert }) {
 
     if (!alert) {
+
         return (
             <section className="latest-capture">
 
-                <div className="panel-header">
-                    <div>
-                        <h2>Latest Capture</h2>
-                        <p>No recent captures</p>
-                    </div>
-                </div>
+                <h2>Latest Capture</h2>
 
-                <div className="no-capture">
-                    No image captured yet
-                </div>
+                <p>
+                    No captured images yet.
+                </p>
 
             </section>
         );
     }
 
 
-    const imageName =
-        alert.image_path
-            ?.split("\\")
-            .pop()
-            ?.split("/")
-            .pop();
-
-
-    const imageUrl =
-        `http://localhost:5000/uploads/${imageName}`;
+    const imageUrl = alert.image_path
+        ? `http://localhost:5000${alert.image_path}`
+        : null;
 
 
     return (
@@ -38,48 +27,55 @@ function LatestCapture({ alert }) {
             <div className="panel-header">
 
                 <div>
-                    <h2>Latest Capture</h2>
-                    <p>Most recent security image</p>
+                    <h2>
+                        Latest Capture
+                    </h2>
+
+                    <p>
+                        Most recent security event
+                    </p>
                 </div>
 
             </div>
 
 
-            <div className="latest-image-container">
+            {imageUrl ? (
 
                 <img
                     src={imageUrl}
                     alt="Latest security capture"
-                    className="latest-image"
+                    className="latest-capture-image"
                 />
 
-            </div>
+            ) : (
+
+                <p>
+                    No image available.
+                </p>
+
+            )}
 
 
             <div className="capture-details">
 
-                <div>
-                    <strong>
-                        {alert.label || "Unknown"}
-                    </strong>
+                <p>
+                    <strong>Status:</strong>{" "}
+                    {alert.status}
+                </p>
 
-                    <span>
-                        Detection
-                    </span>
-                </div>
+                <p>
+                    <strong>Detection:</strong>{" "}
+                    {alert.label || "Unknown"}
+                </p>
 
-
-                <div>
-                    <strong>
-                        {Math.round(
-                            (alert.confidence || 0) * 100
-                        )}%
-                    </strong>
-
-                    <span>
-                        Confidence
-                    </span>
-                </div>
+                <p>
+                    <strong>Confidence:</strong>{" "}
+                    {alert.confidence
+                        ? `${Math.round(
+                            alert.confidence * 100
+                        )}%`
+                        : "N/A"}
+                </p>
 
             </div>
 
