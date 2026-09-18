@@ -6,7 +6,9 @@ const {
     getMe
 } = require("../controllers/authController");
 
-const authMiddleware =
+const {
+    authenticateToken
+} =
     require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -29,7 +31,7 @@ router.post(
 // Current logged-in user
 router.get(
     "/me",
-    authMiddleware,
+    authenticateToken,
     getMe
 );
 

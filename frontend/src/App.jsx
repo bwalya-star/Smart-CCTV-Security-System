@@ -170,6 +170,7 @@ function App() {
 
         <Dashboard
             user={user}
+            token={localStorage.getItem("token")}
             onLogout={handleLogout}
         />
 

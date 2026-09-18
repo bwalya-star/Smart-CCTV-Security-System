@@ -1,0 +1,26 @@
+Test Condition,Run,Processing Time (ms),Detected Person,Expected Person,Confidence,Result
+Empty Scene,1,2865.36,False,False,0.0,TRUE_NEGATIVE
+Empty Scene,2,270.6,False,False,0.0,TRUE_NEGATIVE
+Empty Scene,3,170.89,False,False,0.0,TRUE_NEGATIVE
+Empty Scene,4,167.27,False,False,0.0,TRUE_NEGATIVE
+Empty Scene,5,133.79,False,False,0.0,TRUE_NEGATIVE
+Person Nearby,1,174.43,True,True,0.927,TRUE_POSITIVE
+Person Nearby,2,143.44,True,True,0.927,TRUE_POSITIVE
+Person Nearby,3,138.27,True,True,0.927,TRUE_POSITIVE
+Person Nearby,4,189.34,True,True,0.927,TRUE_POSITIVE
+Person Nearby,5,131.55,True,True,0.927,TRUE_POSITIVE
+Person Far Away,1,144.88,True,True,0.9225,TRUE_POSITIVE
+Person Far Away,2,134.02,True,True,0.9225,TRUE_POSITIVE
+Person Far Away,3,175.11,True,True,0.9225,TRUE_POSITIVE
+Person Far Away,4,135.09,True,True,0.9225,TRUE_POSITIVE
+Person Far Away,5,151.81,True,True,0.9225,TRUE_POSITIVE
+Multiple People,1,188.2,True,True,0.8755,TRUE_POSITIVE
+Multiple People,2,132.88,True,True,0.8755,TRUE_POSITIVE
+Multiple People,3,154.32,True,True,0.8755,TRUE_POSITIVE
+Multiple People,4,183.33,True,True,0.8755,TRUE_POSITIVE
+Multiple People,5,130.31,True,True,0.8755,TRUE_POSITIVE
+Low Light,1,143.28,True,True,0.9298,TRUE_POSITIVE
+Low Light,2,184.07,True,True,0.9298,TRUE_POSITIVE
+Low Light,3,126.65,True,True,0.9298,TRUE_POSITIVE
+Low Light,4,138.1,True,True,0.9298,TRUE_POSITIVE
+Low Light,5,144.01,True,True,0.9298,TRUE_POSITIVE

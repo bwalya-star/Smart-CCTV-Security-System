@@ -20,6 +20,9 @@ CAMERA_URL = "http://127.0.0.1:8000/capture"
 
 BACKEND_URL = "http://localhost:5000/api/alerts"
 
+DEVICE_CODE = "CCTV-0001"
+DEVICE_SECRET = "3182c8dada7eb438092af42029df581527c382a8bdd6859f3c97ad9e7ddda47b"
+
 
 def find_serial_port():
     ports = serial.tools.list_ports.comports()
@@ -75,6 +78,10 @@ def send_alert_to_backend(image_path):
             BACKEND_URL,
             json={
                 "imagePath": image_path
+            },
+            headers={
+                "X-Device-Code": DEVICE_CODE,
+                "X-Device-Secret": DEVICE_SECRET
             },
             timeout=10
         )

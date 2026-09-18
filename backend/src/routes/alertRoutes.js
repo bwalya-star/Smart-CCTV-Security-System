@@ -1,9 +1,37 @@
 const express = require('express');
+const {
+	authenticateToken
+} = require("../middleware/authMiddleware");
+const {
+    authenticateDeviceRequest
+} = require("../middleware/deviceMiddleware");
 const router = express.Router();
-const { getAlerts, handleAlert, fetchAlerts } = require('../controllers/alertController');
+const {
+    getAlerts,
+    handleAlert,
+    fetchAlerts,
+    getEventTimeline
+} = require('../controllers/alertController');
 
-router.get('/', getAlerts);
-router.post('/', handleAlert);
-router.get('/fetch', fetchAlerts);
+router.get(
+    "/",
+    authenticateToken,
+    getAlerts
+);
+router.get(
+    "/timeline",
+    authenticateToken,
+    getEventTimeline
+);
+router.post(
+    "/",
+    authenticateDeviceRequest,
+    handleAlert
+);
+router.get(
+    "/fetch",
+    authenticateToken,
+    fetchAlerts
+);
 
 module.exports = router;

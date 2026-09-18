@@ -1,0 +1,6 @@
+test,image,expected,predicted,similarity,processing_time_ms,recognized,result
+1,face2.jpg,bwalya,bwalya,1.0,1566.46,True,TP
+2,face3.jpg,bwalya,bwalya,1.0,1858.68,True,TP
+3,face2.jpg,sekelani,sekelani,1.0,1801.54,True,TP
+4,face3.jpg,sekelani,sekelani,1.0,1532.54,True,TP
+5,unknown1.jpg,unknown,unknown,0.1168,1436.73,False,TN

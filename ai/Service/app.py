@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
 from flask import Flask
 
 from routes.detect import detect_bp
+
+load_dotenv()
 
 
 app = Flask(__name__)

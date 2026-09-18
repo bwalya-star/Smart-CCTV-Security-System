@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { getAlerts } from "../services/api";
 import socket from "../services/socket";
 
-export default function useAlerts() {
+export default function useAlerts(userId) {
 
     const [alerts, setAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [liveAlert, setLiveAlert] = useState(null);
 
     async function loadAlerts() {
 
@@ -14,6 +15,10 @@ export default function useAlerts() {
             const data = await getAlerts();
 
             setAlerts(data);
+
+            if (data.length > 0) {
+                setLiveAlert(data[0]);
+            }
 
         } catch (error) {
 
@@ -33,6 +38,31 @@ export default function useAlerts() {
 
         loadAlerts();
 
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            return undefined;
+        }
+
+        socket.auth = { token };
+        socket.connect();
+
+        function joinUserRoom() {
+
+            if (userId) {
+                socket.emit(
+                    "join_user_room",
+                    userId
+                );
+            }
+        }
+
+        socket.on("connect", joinUserRoom);
+
+        if (socket.connected) {
+            joinUserRoom();
+        }
+
         socket.on("new_alert", (newAlert) => {
 
             console.log(
@@ -45,18 +75,23 @@ export default function useAlerts() {
                 ...currentAlerts
             ]);
 
+            setLiveAlert(newAlert);
+
         });
 
         return () => {
 
+            socket.off("connect", joinUserRoom);
             socket.off("new_alert");
+            socket.disconnect();
 
         };
 
-    }, []);
+    }, [userId]);
 
     return {
         alerts,
-        loading
+        loading,
+        liveAlert
     };
 }
