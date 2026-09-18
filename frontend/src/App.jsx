@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import AppShell from "./components/AppShell";
 
 import "./App.css";
 
@@ -167,13 +167,11 @@ function App() {
     // ==========================================
 
     return (
-
-        <Dashboard
+        <AppShell
             user={user}
             token={localStorage.getItem("token")}
             onLogout={handleLogout}
         />
-
     );
 
 }

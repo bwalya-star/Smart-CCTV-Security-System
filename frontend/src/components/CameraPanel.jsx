@@ -6,7 +6,7 @@ import {
 } from "../services/api";
 
 
-function CameraPanel() {
+function CameraPanel({ token }) {
 
     const [recording, setRecording] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ function CameraPanel() {
             try {
 
                 const data =
-                    await getCameraStatus();
+                    await getCameraStatus(token);
 
                 setRecording(
                     data.recording
@@ -41,7 +41,7 @@ function CameraPanel() {
 
         loadCameraStatus();
 
-    }, []);
+    }, [token]);
 
 
     async function handleStartRecording() {
@@ -52,7 +52,7 @@ function CameraPanel() {
         try {
 
             const data =
-                await startRecording();
+                await startRecording(token);
 
             setRecording(
                 data.recording
@@ -82,7 +82,7 @@ function CameraPanel() {
         try {
 
             const data =
-                await stopRecording();
+                await stopRecording(token);
 
             setRecording(
                 data.recording
@@ -167,23 +167,23 @@ function CameraPanel() {
                 {!recording ? (
 
                     <button
-                        className="start-recording"
-                        onClick={
-                            handleStartRecording
-                        }
-                        disabled={loading}
-                    >
+                            className="dashboard-button dashboard-button-primary start-recording"
+                            onClick={
+                                handleStartRecording
+                            }
+                            disabled={loading}
+                        >
 
-                        {loading
-                            ? "Starting..."
-                            : "▶ Start Recording"}
+                            {loading
+                                ? "Starting..."
+                                : "▶ Start Recording"}
 
                     </button>
 
                 ) : (
 
                     <button
-                        className="stop-recording"
+                        className="dashboard-button dashboard-button-danger stop-recording"
                         onClick={
                             handleStopRecording
                         }

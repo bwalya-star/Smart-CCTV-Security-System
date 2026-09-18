@@ -123,12 +123,15 @@ export async function renameDevice(
 }
 
 
-export async function startRecording() {
+export async function startRecording(token) {
 
     const response = await fetch(
         "http://localhost:5000/api/camera/start",
         {
             method: "POST"
+            ,headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
     );
 
@@ -142,12 +145,15 @@ export async function startRecording() {
 }
 
 
-export async function stopRecording() {
+export async function stopRecording(token) {
 
     const response = await fetch(
         "http://localhost:5000/api/camera/stop",
         {
-            method: "POST"
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         }
     );
 
@@ -161,10 +167,15 @@ export async function stopRecording() {
 }
 
 
-export async function getCameraStatus() {
+export async function getCameraStatus(token) {
 
     const response = await fetch(
-        "http://localhost:5000/api/camera/status"
+        "http://localhost:5000/api/camera/status",
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
     );
 
     if (!response.ok) {
