@@ -1,15 +1,25 @@
-const { detectPerson } = require('../services/aiService');
+const {
+    detectPerson
+} = require("../services/aiService");
+
 const {
     saveAlert,
-    getAlerts: getAlertsFromDB
-} = require('../services/databaseService');
+    getAlertsByUser
+} = require("../services/databaseService");
+
+const {
+    sendNotification
+} = require("../services/notificationService");
 
 
-// Get all alerts
 async function getAlerts(req, res) {
+
     try {
 
-        const alerts = await getAlertsFromDB();
+        const userId = req.user.id;
+
+        const alerts =
+            await getAlertsByUser(userId);
 
         res.json(alerts);
 
@@ -23,84 +33,309 @@ async function getAlerts(req, res) {
         res.status(500).json({
             error: error.message
         });
+
     }
 }
 
 
-// Handle a new security alert
+async function getEventTimeline(req, res) {
+
+    try {
+
+        const alerts =
+            await getAlertsByUser(req.user.id);
+
+        const timeline =
+            alerts.map(alert => ({
+
+                id: alert.id,
+
+                timestamp:
+                    alert.created_at,
+
+                event_type:
+                    alert.alert_classification ||
+                    "SECURITY_EVENT",
+
+                detected:
+                    Boolean(alert.detected),
+
+                confidence:
+                    alert.confidence,
+
+                identity:
+                    alert.identity_name ||
+                    "Unknown",
+
+                identity_status:
+                    alert.identity_status ||
+                    "not_checked",
+
+                face_similarity:
+                    alert.face_similarity,
+
+                severity:
+                    alert.severity ||
+                    "UNKNOWN",
+
+                status:
+                    alert.status,
+
+                notification_sent:
+                    Boolean(
+                        alert.notification_sent
+                    ),
+
+                notification_status:
+                    alert.notification_status ||
+                    "not_required",
+
+                notification_channel:
+                    alert.notification_channel ||
+                    null,
+
+                image_path:
+                    alert.image_path
+
+            }));
+
+        res.status(200).json({
+            success: true,
+            count: timeline.length,
+            data: timeline
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error loading event timeline:",
+            error
+        );
+
+        res.status(500).json({
+            success: false,
+            error:
+                "Failed to load event timeline"
+        });
+
+    }
+
+}
+
+
 async function handleAlert(req, res) {
 
     try {
 
-        const { imagePath } = req.body;
+        const {
+            imagePath
+        } = req.body;
 
         console.log(
             "Alert received:",
             imagePath
         );
 
+        // ==================================
+        // DEVICE INFORMATION
+        // ==================================
 
-        // ==============================
+        const device = req.device;
+
+        if (!device) {
+
+            return res.status(401).json({
+                error: "Unauthenticated CCTV device"
+            });
+
+        }
+
+        const deviceId =
+            device.id;
+
+        const userId =
+            device.user_id;
+
+        console.log(
+            "Device ID:",
+            deviceId
+        );
+
+        console.log(
+            "User ID:",
+            userId
+        );
+
+        // ==================================
         // AI DETECTION
-        // ==============================
+        // ==================================
 
-        const result = await detectPerson(imagePath);
+        const result =
+            await detectPerson(imagePath);
 
-        const detected = result.detected;
+        const detected =
+            result.detected;
 
         const confidence =
-            result.confidence;
+            result.confidence || 0.0;
 
         const status =
-            result.status || (
-                detected
-                    ? "threat"
-                    : "safe"
-            );
+            detected
+                ? "threat"
+                : "safe";
 
+        const alertClassification =
+            result.alert_classification ||
+            "UNIDENTIFIED_PERSON";
 
-        // ==============================
-        // SAVE TO DATABASE
-        // ==============================
+        const severity =
+            result.severity ||
+            "MEDIUM";
+
+        const faceRecognition =
+            result.face_recognition || {
+                performed: false,
+                recognized: false,
+                name: "not_checked",
+                similarity: 0.0,
+                identity_status: "not_checked"
+            };
+
+        console.log("--------------------------------");
+
+        console.log(
+            "Identity:",
+            faceRecognition.name
+        );
+
+        console.log(
+            "Identity status:",
+            faceRecognition.identity_status
+        );
+
+        console.log(
+            "Face similarity:",
+            faceRecognition.similarity
+        );
+
+        console.log(
+            "Alert classification:",
+            alertClassification
+        );
+
+        console.log(
+            "Severity:",
+            severity
+        );
+
+        console.log("--------------------------------");
+
+        const notificationResult =
+            await sendNotification({
+                image_path: imagePath,
+                detected,
+                confidence,
+                status,
+                identity_name: faceRecognition.name,
+                face_similarity: faceRecognition.similarity,
+                identity_status: faceRecognition.identity_status,
+                alert_classification: alertClassification,
+                severity
+            });
+
+        console.log(
+            "Notification result:",
+            notificationResult
+        );
 
         await saveAlert(
             imagePath,
             detected,
             confidence,
-            status
+            status,
+            faceRecognition.name,
+            faceRecognition.similarity,
+            faceRecognition.identity_status,
+            alertClassification,
+            severity,
+            userId,
+            deviceId,
+            notificationResult.sent || false,
+            notificationResult.notificationChannel || null,
+            notificationResult.notificationStatus || "not_required"
         );
 
+        console.log(
+            "Alert and notification history saved to database."
+        );
 
-        // ==============================
+        // ==================================
         // REAL-TIME DASHBOARD UPDATE
-        // ==============================
+        // ==================================
 
-        const io = req.app.get("io");
+        const io =
+            req.app.get("io");
 
         if (io) {
 
-            io.emit("new_alert", {
+            io.to(
+                `user_${userId}`
+            ).emit(
+                "new_alert",
+                {
 
-                image_path: imagePath,
+                    image_path:
+                        imagePath,
 
-                detected: detected,
+                    detected,
 
-                confidence: confidence,
+                    confidence,
 
-                status: status,
+                    status,
 
-                label:
-                    result.label ||
-                    "unknown",
+                    label:
+                        result.label ||
+                        "unknown",
 
-                detections:
-                    result.detections ||
-                    [],
+                    alert_classification:
+                        alertClassification,
 
-                created_at:
-                    new Date()
+                    severity:
+                        severity,
 
-            });
+                    face_recognition:
+                        faceRecognition,
+
+                    notification_sent:
+                        notificationResult.sent || false,
+
+                    notification_channel:
+                        notificationResult.notificationChannel || null,
+
+                    notification_status:
+                        notificationResult.notificationStatus ||
+                        "not_required",
+
+                    notification_required:
+                        notificationResult.sent || false,
+
+                    user_id:
+                        userId,
+
+                    device_id:
+                        deviceId,
+
+                    device_name:
+                        device.device_name,
+
+                    device_code:
+                        device.device_code,
+
+                    created_at:
+                        new Date()
+
+                }
+            );
 
             console.log(
                 "Real-time alert sent to dashboard."
@@ -108,17 +343,55 @@ async function handleAlert(req, res) {
         }
 
 
-        // ==============================
-        // RESPONSE TO PYTHON BRIDGE
-        // ==============================
+        // ==================================
+        // RESPONSE
+        // ==================================
+
+        let message;
+
+        switch (alertClassification) {
+
+            case "NO_PERSON":
+                message = "No person detected";
+                break;
+
+            case "KNOWN_PERSON":
+                message =
+                    `Known person detected: ${faceRecognition.name}`;
+                break;
+
+            case "UNKNOWN_PERSON":
+                message = "Unknown person detected";
+                break;
+
+            case "UNIDENTIFIED_PERSON":
+                message = "Person detected but identity unavailable";
+                break;
+
+            default:
+                message = "Security event detected";
+        }
 
         res.status(200).json({
 
-            message: detected
-                ? "Person detected"
-                : "No threat",
+            message,
 
-            data: result
+            data: result,
+
+            notification:
+                notificationResult,
+
+            device: {
+
+                id: deviceId,
+
+                name:
+                    device.device_name,
+
+                code:
+                    device.device_code
+
+            }
 
         });
 
@@ -133,6 +406,7 @@ async function handleAlert(req, res) {
         res.status(500).json({
             error: "Server error"
         });
+
     }
 }
 
@@ -143,11 +417,16 @@ async function fetchAlerts(req, res) {
     try {
 
         const alerts =
-            await getAlertsFromDB();
+            await getAlertsByUser(req.user.id);
 
         res.json(alerts);
 
     } catch (error) {
+
+        console.error(
+            "Backend Error in fetchAlerts:",
+            error
+        );
 
         res.status(500).json({
             error: error.message
@@ -159,5 +438,6 @@ async function fetchAlerts(req, res) {
 module.exports = {
     getAlerts,
     handleAlert,
-    fetchAlerts
+    fetchAlerts,
+    getEventTimeline
 };

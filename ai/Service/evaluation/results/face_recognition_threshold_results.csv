@@ -1,0 +1,31 @@
+threshold,condition,expected_name,matched_name,similarity,recognized,result
+0.4,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.4,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.4,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.4,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.4,Unknown Person,unknown,bwalya,0.1168,False,TN
+0.45,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.45,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.45,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.45,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.45,Unknown Person,unknown,bwalya,0.1168,False,TN
+0.5,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.5,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.5,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.5,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.5,Unknown Person,unknown,bwalya,0.1168,False,TN
+0.55,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.55,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.55,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.55,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.55,Unknown Person,unknown,bwalya,0.1168,False,TN
+0.6,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.6,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.6,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.6,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.6,Unknown Person,unknown,bwalya,0.1168,False,TN
+0.65,Bwalya Face 2,bwalya,bwalya,1.0,True,TP
+0.65,Bwalya Face 3,bwalya,bwalya,1.0,True,TP
+0.65,Sekelani Face 2,sekelani,sekelani,1.0,True,TP
+0.65,Sekelani Face 3,sekelani,sekelani,1.0,True,TP
+0.65,Unknown Person,unknown,bwalya,0.1168,False,TN

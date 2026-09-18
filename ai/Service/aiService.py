@@ -2,6 +2,7 @@ import os
 import cv2
 
 from models.detectionModel import DetectionModel
+from models.face_recognition_module import FaceRecognitionModule
 
 
 # Project root
@@ -22,6 +23,7 @@ UPLOADS_DIR = os.path.join(
 
 # Load YOLO once when the AI service starts
 detection_model = DetectionModel()
+face_recognition_module = FaceRecognitionModule()
 
 
 def resolve_image_path(image_path):
@@ -54,38 +56,32 @@ def resolve_image_path(image_path):
 
 def detect_person(image_path):
 
-    print("=================================")
+    print("\n=================================")
     print("AI SERVICE")
+    print("=================================")
+
     print("Image received:")
     print(image_path)
+
     print("=================================")
 
-
-    # Convert web path to filesystem path
     image_path = resolve_image_path(
         image_path
     )
 
-
-    # Check image exists
     if not os.path.exists(image_path):
-
         raise FileNotFoundError(
             f"Image not found: {image_path}"
         )
 
-
-    # Check that OpenCV can read it
     image = cv2.imread(
         image_path
     )
 
     if image is None:
-
         raise ValueError(
             "Could not read image."
         )
-
 
     height, width = image.shape[:2]
 
@@ -94,14 +90,25 @@ def detect_person(image_path):
         f"{width}x{height}"
     )
 
+    # ==========================================
+    # YOLO PERSON DETECTION
+    # ==========================================
 
-    # ==================================
-    # YOLO DETECTION
-    # ==================================
+    print("\n=================================")
+    print("YOLO PERSON DETECTION")
+    print("=================================")
 
-    detections = detection_model.detect(
+    model_result = detection_model.detect(
         image_path
     )
+
+    detections = model_result[
+        "detections"
+    ]
+
+    processing_time_ms = model_result[
+        "processing_time_ms"
+    ]
 
 
     # ==================================
@@ -109,67 +116,201 @@ def detect_person(image_path):
     # ==================================
 
     person_detections = [
-
         detection
-
         for detection in detections
-
         if detection["label"] == "person"
-
     ]
 
+    print(
+        "Persons detected:",
+        len(person_detections)
+    )
 
-    # ==================================
-    # SECURITY CLASSIFICATION
-    # ==================================
+    # ==========================================
+    # NO PERSON DETECTED
+    # ==========================================
 
-    if person_detections:
+    if not person_detections:
 
-        best_detection = max(
+        print("No person detected.")
 
-            person_detections,
+        return {
+            "detected": False,
+            "confidence": 0.0,
+            "label": "no_person",
+            "detections": detections,
+            "processing_time_ms": processing_time_ms,
+            "alert_classification": "NO_PERSON",
+            "severity": "INFO",
 
-            key=lambda detection:
-                detection["confidence"]
+            "face_recognition": {
+                "performed": False,
+                "recognized": False,
+                "name": "no_person",
+                "similarity": 0.0,
+                "identity_status": "not_checked"
+            }
+        }
 
+    # ==========================================
+    # BEST PERSON DETECTION
+    # ==========================================
+
+    best_detection = max(
+        person_detections,
+        key=lambda detection:
+        detection["confidence"]
+    )
+
+    detected = True
+
+    confidence = best_detection[
+        "confidence"
+    ]
+
+    label = "person"
+
+    # ==========================================
+    # FACE RECOGNITION
+    # ==========================================
+
+    print("\n=================================")
+    print("FACE RECOGNITION")
+    print("=================================")
+
+    try:
+
+        face_result = face_recognition_module.recognize(
+            image_path
         )
 
-        detected = True
-
-        confidence = (
-            best_detection["confidence"]
+        print(
+            "Face recognition result:",
+            face_result
         )
 
-        label = "person"
+    except Exception as error:
 
-        status = "threat"
+        print(
+            "Face recognition error:",
+            error
+        )
 
+        face_result = {
+            "recognized": False,
+            "name": "error",
+            "confidence": 0.0
+        }
+
+    # ==========================================
+    # INTERPRET FACE RESULT
+    # ==========================================
+
+    face_name = face_result.get(
+        "name",
+        "unknown"
+    )
+
+    face_recognized = face_result.get(
+        "recognized",
+        False
+    )
+
+    face_similarity = face_result.get(
+        "confidence",
+        0.0
+    )
+
+    # ==========================================
+    # DETERMINE IDENTITY STATUS
+    # ==========================================
+
+    if face_recognized:
+
+        identity_status = "known"
+        alert_classification = "KNOWN_PERSON"
+        severity = "LOW"
+
+    elif face_name == "unknown":
+
+        identity_status = "unknown"
+        alert_classification = "UNKNOWN_PERSON"
+        severity = "HIGH"
 
     else:
 
-        detected = False
+        identity_status = "unidentified"
+        alert_classification = "UNIDENTIFIED_PERSON"
+        severity = "MEDIUM"
 
-        confidence = 0.0
+    print("\n=================================")
+    print("AI DECISION")
+    print("=================================")
 
-        label = "no_person"
+    print(
+        "Person detected:",
+        detected
+    )
 
-        status = "safe"
+    print(
+        "Person confidence:",
+        confidence
+    )
 
+    print(
+        "Face identity:",
+        face_name
+    )
 
-    # ==================================
-    # RETURN RESULT
-    # ==================================
+    print(
+        "Face similarity:",
+        face_similarity
+    )
+
+    print(
+        "Identity status:",
+        identity_status
+    )
+
+    print(
+        f"Alert classification: {alert_classification}"
+    )
+
+    print(
+        f"Severity: {severity}"
+    )
 
     return {
-
         "detected": detected,
 
         "confidence": confidence,
 
         "label": label,
 
-        "status": status,
+        "detections": detections,
 
-        "detections": detections
+        "processing_time_ms":
+            processing_time_ms,
 
+        "alert_classification":
+            alert_classification,
+
+        "severity":
+            severity,
+
+        "face_recognition": {
+            "performed": True,
+
+            "recognized":
+                face_recognized,
+
+            "name":
+                face_name,
+
+            "similarity":
+                face_similarity,
+
+            "identity_status":
+                identity_status
+        }
     }

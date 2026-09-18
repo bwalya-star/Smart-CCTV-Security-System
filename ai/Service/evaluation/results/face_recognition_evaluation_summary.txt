@@ -1,0 +1,25 @@
+FACE RECOGNITION EVALUATION SUMMARY
+========================================
+
+Recognition threshold: 0.50
+Total tests: 5
+
+CLASSIFICATION METRICS
+----------------------------------------
+True Positives (TP): 4
+True Negatives (TN): 1
+False Positives (FP): 0
+False Negatives (FN): 0
+
+Accuracy: 100.00%
+Recognition Rate: 100.00%
+False Positive Rate: 0.00%
+False Negative Rate: 0.00%
+
+FACE SIMILARITY
+----------------------------------------
+Average similarity: 0.8234
+
+PROCESSING PERFORMANCE
+----------------------------------------
+Average processing time: 1639.19 ms
