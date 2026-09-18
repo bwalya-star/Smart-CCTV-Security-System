@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import 'tailwindcss';
+
 * {
   margin: 0;
   padding: 0;
@@ -13,4 +16,12 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+@theme {
+  --color-primary: #8b5cf6;
+  --color-primary-hover: #7c3aed;
+  --color-secondary: #ec4899;
+  --color-dark-bg: #0f172a;
+  --color-dark-card: #1e293b;
 }

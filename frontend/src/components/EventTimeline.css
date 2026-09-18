@@ -129,3 +129,22 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 480px) {
+  .timeline {
+    margin-left: 2px;
+  }
+
+  .timeline-item {
+    gap: 12px;
+  }
+
+  .timeline-content {
+    padding: 12px;
+  }
+
+  .timeline-details {
+    gap: 8px;
+    line-height: 1.4;
+  }
+}

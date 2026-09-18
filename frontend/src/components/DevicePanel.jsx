@@ -163,7 +163,7 @@ function DevicePanel({ token }) {
                             </div>
 
                             <button
-                                className="device-action-button"
+                                className="dashboard-button dashboard-button-primary device-action-button"
                                 onClick={async () => {
 
                                     try {
