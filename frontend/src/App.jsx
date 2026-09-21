@@ -10,8 +10,9 @@ function App() {
 
     const [user, setUser] = useState(null);
 
-    const [checkingAuth, setCheckingAuth] =
-        useState(true);
+    const [checkingAuth, setCheckingAuth] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState("dashboard");
 
 
     // ==========================================
@@ -22,9 +23,7 @@ function App() {
 
         async function checkAuthentication() {
 
-            const token =
-                localStorage.getItem("token");
-
+            const token = localStorage.getItem("token");
 
             if (!token) {
 
@@ -37,34 +36,26 @@ function App() {
 
             try {
 
-                const response =
-                    await fetch(
-                        "http://localhost:5000/api/auth/me",
-                        {
-                            headers: {
-                                Authorization:
-                                    `Bearer ${token}`
-                            }
+                const response = await fetch(
+                    "http://localhost:5000/api/auth/me",
+                    {
+                        headers: {
+                            Authorization: "Bearer " + token
                         }
-                    );
+                    }
+                );
 
 
                 if (!response.ok) {
 
-                    throw new Error(
-                        "Invalid token"
-                    );
+                    throw new Error("Invalid token");
 
                 }
 
 
-                const data =
-                    await response.json();
+                const data = await response.json();
 
-
-                setUser(
-                    data.user
-                );
+                setUser(data.user);
 
 
             } catch (error) {
@@ -74,11 +65,10 @@ function App() {
                     error
                 );
 
-                localStorage.removeItem(
-                    "token"
-                );
+                localStorage.removeItem("token");
 
                 setUser(null);
+
 
             } finally {
 
@@ -102,6 +92,8 @@ function App() {
 
         setUser(loggedInUser);
 
+        setCurrentPage("dashboard");
+
     }
 
 
@@ -111,11 +103,11 @@ function App() {
 
     function handleLogout() {
 
-        localStorage.removeItem(
-            "token"
-        );
+        localStorage.removeItem("token");
 
         setUser(null);
+
+        setCurrentPage("dashboard");
 
     }
 
@@ -163,7 +155,124 @@ function App() {
 
 
     // ==========================================
-    // DASHBOARD
+    // PAGE RENDERING
+    // ==========================================
+
+    function renderPage() {
+
+        switch (currentPage) {
+
+            case "dashboard":
+
+                return (
+                    <Dashboard
+                        user={user}
+                        onLogout={handleLogout}
+                    />
+                );
+
+
+            case "alerts":
+
+                return (
+                    <div className="page-placeholder">
+
+                        <h1>
+                            🚨 System Alerts
+                        </h1>
+
+                        <p>
+                            System alerts page coming next.
+                        </p>
+
+                    </div>
+                );
+
+
+            case "people":
+
+                return (
+                    <div className="page-placeholder">
+
+                        <h1>
+                            👥 Detected People
+                        </h1>
+
+                        <p>
+                            Detected people page coming next.
+                        </p>
+
+                    </div>
+                );
+
+
+            case "statistics":
+
+                return (
+                    <div className="page-placeholder">
+
+                        <h1>
+                            📊 Statistics
+                        </h1>
+
+                        <p>
+                            Statistics page coming next.
+                        </p>
+
+                    </div>
+                );
+
+
+            case "profile":
+
+                return (
+                    <div className="page-placeholder">
+
+                        <h1>
+                            👤 Profile
+                        </h1>
+
+                        <p>
+                            Profile page coming next.
+                        </p>
+
+                    </div>
+                );
+
+
+            case "settings":
+
+                return (
+                    <div className="page-placeholder">
+
+                        <h1>
+                            ⚙️ Settings
+                        </h1>
+
+                        <p>
+                            Settings page coming next.
+                        </p>
+
+                    </div>
+                );
+
+
+            default:
+
+                return (
+                    <Dashboard
+                        user={user}
+                        onLogout={handleLogout}
+                    />
+                );
+
+        }
+
+    }
+
+
+    // ==========================================
+    // MAIN APPLICATION
     // ==========================================
 
     return (
@@ -178,3 +287,4 @@ function App() {
 
 
 export default App;
+
