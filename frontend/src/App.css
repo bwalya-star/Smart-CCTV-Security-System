@@ -604,3 +604,364 @@
 .logout-button:hover {
     background: rgba(255, 255, 255, 0.05);
 }
+```css
+/* =========================================
+   MAIN APPLICATION
+========================================= */
+
+.app-layout {
+    min-height: 100vh;
+    background: #080b10;
+}
+
+.main-content {
+    min-height: 100vh;
+    width: 100%;
+}
+
+
+/* =========================================
+   SIDEBAR TRIGGER
+========================================= */
+
+.sidebar-trigger {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 20px;
+    height: 100vh;
+
+    z-index: 999;
+
+    background: transparent;
+}
+
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 270px;
+    height: 100vh;
+
+    box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.97);
+
+    border-right: 1px solid #334155;
+
+    box-shadow:
+        10px 0 35px rgba(0, 0, 0, 0.4);
+
+    backdrop-filter: blur(14px);
+
+    z-index: 1000;
+
+    transform: translateX(-100%);
+
+    transition:
+        transform 0.3s ease;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 20px 14px;
+}
+
+
+/* Pop out when mouse reaches left edge */
+
+.sidebar-trigger:hover + .sidebar {
+    transform: translateX(0);
+}
+
+
+/* Keep open while mouse is inside */
+
+.sidebar:hover {
+    transform: translateX(0);
+}
+
+
+/* =========================================
+   SIDEBAR HEADER
+========================================= */
+
+.sidebar-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 8px 10px 20px;
+
+    border-bottom:
+        1px solid #334155;
+}
+
+
+.sidebar-logo {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #1e293b;
+
+    font-size: 23px;
+}
+
+
+.sidebar-header h2 {
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-size: 15px;
+
+    letter-spacing: 0.5px;
+}
+
+
+.sidebar-header span {
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+/* =========================================
+   USER
+========================================= */
+
+.sidebar-user {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 15px 10px;
+
+    margin: 12px 0;
+
+    background: #111827;
+
+    border: 1px solid #1f2937;
+
+    border-radius: 10px;
+}
+
+
+.sidebar-user-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #1e293b;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+}
+
+
+.sidebar-user div:last-child {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+
+.sidebar-user strong {
+    color: #e5e7eb;
+
+    font-size: 13px;
+}
+
+
+.sidebar-user span {
+    color: #64748b;
+
+    font-size: 10px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.sidebar-navigation {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    flex: 1;
+}
+
+
+.sidebar-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 12px 13px;
+
+    border: 1px solid transparent;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #94a3b8;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.sidebar-item:hover {
+    background: #1e293b;
+
+    color: #f8fafc;
+
+    border-color: #334155;
+
+    transform: translateX(4px);
+}
+
+
+.sidebar-item.active {
+    background: #1e3a5f;
+
+    color: #ffffff;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        inset 3px 0 0 #3b82f6;
+}
+
+
+.sidebar-icon {
+    width: 25px;
+
+    text-align: center;
+
+    font-size: 17px;
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+.sidebar-bottom {
+    border-top:
+        1px solid #334155;
+
+    padding-top: 12px;
+
+    margin-top: 12px;
+}
+
+
+.logout-sidebar {
+    color: #f87171;
+}
+
+
+.logout-sidebar:hover {
+    background: rgba(127, 29, 29, 0.25);
+
+    border-color: #7f1d1d;
+
+    color: #fca5a5;
+}
+
+
+/* =========================================
+   TEMPORARY PAGE
+========================================= */
+
+.page-placeholder {
+    max-width: 1300px;
+
+    margin: auto;
+
+    padding: 40px 30px;
+
+    color: #f8fafc;
+}
+
+
+.page-placeholder h1 {
+    font-size: 28px;
+
+    margin-bottom: 10px;
+}
+
+
+.page-placeholder p {
+    color: #94a3b8;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        width: 250px;
+    }
+
+    .sidebar-trigger {
+        width: 25px;
+    }
+
+}
+
