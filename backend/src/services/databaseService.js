@@ -10,7 +10,16 @@ async function saveAlert(
     detected,
     confidence,
     status,
-    userId = null
+    identityName = null,
+    faceSimilarity = null,
+    identityStatus = null,
+    alertClassification = null,
+    severity = null,
+    userId = null,
+    deviceId = null,
+    notificationSent = false,
+    notificationChannel = null,
+    notificationStatus = null
 ) {
 
     const query = `
@@ -20,9 +29,18 @@ async function saveAlert(
             detected,
             confidence,
             status,
-            user_id
+            identity_name,
+            face_similarity,
+            identity_status,
+            alert_classification,
+            severity,
+            user_id,
+            device_id,
+            notification_sent,
+            notification_channel,
+            notification_status
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
 
@@ -33,7 +51,16 @@ async function saveAlert(
             detected,
             confidence,
             status,
-            userId
+            identityName,
+            faceSimilarity,
+            identityStatus,
+            alertClassification,
+            severity,
+            userId,
+            deviceId,
+            notificationSent,
+            notificationChannel,
+            notificationStatus
         ]
     );
 
@@ -69,10 +96,15 @@ async function getAlerts() {
 async function getAlertsByUser(userId) {
 
     const query = `
-        SELECT *
+        SELECT
+            alerts.*,
+            cctv_devices.device_name,
+            cctv_devices.device_code
         FROM alerts
-        WHERE user_id = ?
-        ORDER BY created_at DESC
+        LEFT JOIN cctv_devices
+            ON alerts.device_id = cctv_devices.id
+        WHERE alerts.user_id = ?
+        ORDER BY alerts.created_at DESC
     `;
 
 

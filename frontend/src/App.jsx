@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import Sidebar from "./components/Sidebar";
+import AppShell from "./components/AppShell";
 
 import "./App.css";
 
@@ -277,25 +276,11 @@ function App() {
     // ==========================================
 
     return (
-
-        <div className="app-layout">
-
-            <Sidebar
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                onLogout={handleLogout}
-                user={user}
-            />
-
-
-            <main className="main-content">
-
-                {renderPage()}
-
-            </main>
-
-        </div>
-
+        <AppShell
+            user={user}
+            token={localStorage.getItem("token")}
+            onLogout={handleLogout}
+        />
     );
 
 }

@@ -193,8 +193,12 @@ function Login({ onLogin }) {
                             required
                         />
 
-                        <button type="submit" disabled={loading}>
-                            {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
+                        <button
+                            className="dashboard-button dashboard-button-primary"
+                            type="submit"
+                            disabled={loading}
+                        >
+                                {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
                         </button>
                     </form>
 

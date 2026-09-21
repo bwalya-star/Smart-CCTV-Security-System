@@ -1,0 +1,26 @@
+AI DETECTION PERFORMANCE EVALUATION
+====================================
+
+Model: YOLO11n
+Confidence Threshold: 0.70
+Runs Per Image: 5
+
+CLASSIFICATION RESULTS
+----------------------
+Total tests: 25
+True positives: 20
+True negatives: 5
+False positives: 0
+False negatives: 0
+
+PERFORMANCE METRICS
+-------------------
+Detection rate: 100.00%
+False positive rate: 0.00%
+False negative rate: 0.00%
+Accuracy: 100.00%
+Average confidence: 0.9137
+Average processing time: 266.04 ms
+Average positive detection time: 152.15 ms
+Minimum processing time: 126.65 ms
+Maximum processing time: 2865.36 ms
