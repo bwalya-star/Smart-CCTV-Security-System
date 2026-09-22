@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
+import { Building2 } from "lucide-react";
 import DevicePanel from "../components/DevicePanel";
 
 const MotionSection = motion.section;
 
 function Profile({ user, token }) {
+    const profilePhoto = user?.profile_photo || user?.avatar_url;
+
     return (
         <div className="page-stack">
             <section className="page-intro">
@@ -21,7 +24,17 @@ function Profile({ user, token }) {
                 transition={{ duration: 0.3, ease: "easeOut" }}
             >
                 <div className="profile-card profile-identity-card">
-                    <div className="profile-avatar">{(user?.name || "U").charAt(0).toUpperCase()}</div>
+                    {profilePhoto ? (
+                        <img
+                            className="profile-avatar profile-photo"
+                            src={profilePhoto}
+                            alt={`${user?.name || "User"} profile`}
+                        />
+                    ) : (
+                        <div className="profile-avatar">
+                            {(user?.name || "U").charAt(0).toUpperCase()}
+                        </div>
+                    )}
                     <div>
                         <span className="eyebrow">SIGNED IN AS</span>
                         <h2>{user?.name || "User"}</h2>
@@ -31,9 +44,12 @@ function Profile({ user, token }) {
                 </div>
 
                 <div className="profile-card">
-                    <span className="eyebrow">PROPERTY</span>
+                    <div className="profile-card-icon">
+                        <Building2 size={18} />
+                    </div>
+                    <span className="eyebrow">BUSINESS / HOUSE</span>
                     <h3>Primary security site</h3>
-                    <div className="profile-detail"><span>Account type</span><strong>Smart CCTV owner</strong></div>
+                    <div className="profile-detail"><span>Property type</span><strong>Business / House</strong></div>
                     <div className="profile-detail"><span>Monitoring</span><strong className="detail-online">Active 24/7</strong></div>
                     <div className="profile-detail"><span>Alert access</span><strong>Private to your account</strong></div>
                 </div>
