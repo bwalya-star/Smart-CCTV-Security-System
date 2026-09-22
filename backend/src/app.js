@@ -14,12 +14,18 @@ const deviceRoutes =
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = (process.env.FRONTEND_URLS ||
+    "http://localhost:5173,http://localhost:4173")
+    .split(",")
+    .map(origin => origin.trim())
+    .filter(Boolean);
+const corsOptions = {
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PATCH", "DELETE"]
+};
 
 const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"]
-    }
+    cors: corsOptions
 });
 
 io.use((socket, next) => {
@@ -66,9 +72,7 @@ io.on('connection', (socket) => {
 app.set('io', io); 
 
 app.use(
-    cors({
-        origin: "http://localhost:5173"
-    })
+    cors(corsOptions)
 );
 app.use(
     express.json({

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { loginUser } from "../services/api";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function Login({ initialMode = "login", onLogin, onBackToLanding }) {
     const [mode, setMode] = useState(initialMode);
     const [name, setName] = useState("");
@@ -34,7 +36,7 @@ function Login({ initialMode = "login", onLogin, onBackToLanding }) {
                 }
 
                 const response = await fetch(
-                    "http://localhost:5000/api/auth/register",
+                    `${API_URL}/api/auth/register`,
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },

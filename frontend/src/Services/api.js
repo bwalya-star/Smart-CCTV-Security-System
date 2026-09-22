@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5000/api'; // Update this to match your backend port (e.g., 5000 or 8000)
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE_URL = `${API_URL}/api`;
 
 export const getAlerts = async () => {
     const token = localStorage.getItem("token");
@@ -23,7 +24,7 @@ export const getAlerts = async () => {
 export async function getDevices(token) {
 
     const response = await fetch(
-        "http://localhost:5000/api/devices",
+        `${API_BASE_URL}/devices`,
         {
             method: "GET",
 
@@ -56,7 +57,7 @@ export async function updateDeviceStatus(
 ) {
 
     const response = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}/status`,
+        `${API_BASE_URL}/devices/${deviceId}/status`,
         {
             method: "PATCH",
 
@@ -93,7 +94,7 @@ export async function renameDevice(
 ) {
 
     const response = await fetch(
-        `http://localhost:5000/api/devices/${deviceId}/name`,
+        `${API_BASE_URL}/devices/${deviceId}/name`,
         {
             method: "PATCH",
 
@@ -126,7 +127,7 @@ export async function renameDevice(
 export async function startRecording(token) {
 
     const response = await fetch(
-        "http://localhost:5000/api/camera/start",
+        `${API_BASE_URL}/camera/start`,
         {
             method: "POST"
             ,headers: {
@@ -148,7 +149,7 @@ export async function startRecording(token) {
 export async function stopRecording(token) {
 
     const response = await fetch(
-        "http://localhost:5000/api/camera/stop",
+        `${API_BASE_URL}/camera/stop`,
         {
             method: "POST",
             headers: {
@@ -170,7 +171,7 @@ export async function stopRecording(token) {
 export async function getCameraStatus(token) {
 
     const response = await fetch(
-        "http://localhost:5000/api/camera/status",
+        `${API_BASE_URL}/camera/status`,
         {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -194,7 +195,7 @@ export async function loginUser(
 ) {
 
     const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        `${API_BASE_URL}/auth/login`,
         {
             method: "POST",
 
