@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
     getDevices,
     updateDeviceStatus
-} from "../services/api";
+} from "../Services/api";
 
 
 function DevicePanel({ token }) {

@@ -3,7 +3,7 @@ import {
     startRecording,
     stopRecording,
     getCameraStatus
-} from "../services/api";
+} from "../Services/api";
 
 
 function CameraPanel({ token }) {
