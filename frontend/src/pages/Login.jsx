@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { loginUser } from "../services/api";
+import { loginUser } from "../Services/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 

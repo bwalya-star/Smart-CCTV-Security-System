@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAlerts } from "../services/api";
-import socket from "../services/socket";
+import { getAlerts } from "../Services/api";
+import socket from "../Services/socket";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
