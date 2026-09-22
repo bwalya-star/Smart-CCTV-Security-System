@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
 import AppShell from "./components/AppShell";
 
 import "./App.css";
@@ -11,9 +12,8 @@ function App() {
     const [user, setUser] = useState(null);
 
     const [checkingAuth, setCheckingAuth] = useState(true);
-
-    const [currentPage, setCurrentPage] = useState("dashboard");
-
+    const [authView, setAuthView] = useState("landing");
+    const [authMode, setAuthMode] = useState("login");
 
     // ==========================================
     // CHECK EXISTING LOGIN
@@ -92,8 +92,6 @@ function App() {
 
         setUser(loggedInUser);
 
-        setCurrentPage("dashboard");
-
     }
 
 
@@ -106,8 +104,6 @@ function App() {
         localStorage.removeItem("token");
 
         setUser(null);
-
-        setCurrentPage("dashboard");
 
     }
 
@@ -142,131 +138,24 @@ function App() {
     // ==========================================
 
     if (!user) {
+        if (authView === "auth") {
+            return (
+                <Login
+                    initialMode={authMode}
+                    onLogin={handleLogin}
+                    onBackToLanding={() => setAuthView("landing")}
+                />
+            );
+        }
 
         return (
-
-            <Login
-                onLogin={handleLogin}
+            <LandingPage
+                onOpenAuth={mode => {
+                    setAuthMode(mode);
+                    setAuthView("auth");
+                }}
             />
-
         );
-
-    }
-
-
-    // ==========================================
-    // PAGE RENDERING
-    // ==========================================
-
-    function renderPage() {
-
-        switch (currentPage) {
-
-            case "dashboard":
-
-                return (
-                    <Dashboard
-                        user={user}
-                        onLogout={handleLogout}
-                    />
-                );
-
-
-            case "alerts":
-
-                return (
-                    <div className="page-placeholder">
-
-                        <h1>
-                            🚨 System Alerts
-                        </h1>
-
-                        <p>
-                            System alerts page coming next.
-                        </p>
-
-                    </div>
-                );
-
-
-            case "people":
-
-                return (
-                    <div className="page-placeholder">
-
-                        <h1>
-                            👥 Detected People
-                        </h1>
-
-                        <p>
-                            Detected people page coming next.
-                        </p>
-
-                    </div>
-                );
-
-
-            case "statistics":
-
-                return (
-                    <div className="page-placeholder">
-
-                        <h1>
-                            📊 Statistics
-                        </h1>
-
-                        <p>
-                            Statistics page coming next.
-                        </p>
-
-                    </div>
-                );
-
-
-            case "profile":
-
-                return (
-                    <div className="page-placeholder">
-
-                        <h1>
-                            👤 Profile
-                        </h1>
-
-                        <p>
-                            Profile page coming next.
-                        </p>
-
-                    </div>
-                );
-
-
-            case "settings":
-
-                return (
-                    <div className="page-placeholder">
-
-                        <h1>
-                            ⚙️ Settings
-                        </h1>
-
-                        <p>
-                            Settings page coming next.
-                        </p>
-
-                    </div>
-                );
-
-
-            default:
-
-                return (
-                    <Dashboard
-                        user={user}
-                        onLogout={handleLogout}
-                    />
-                );
-
-        }
 
     }
 

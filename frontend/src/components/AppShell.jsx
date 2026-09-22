@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-    Activity,
     Bell,
-    Clock3,
     LayoutDashboard,
     LogOut,
     Menu,
     Shield,
     ShieldAlert,
+    UserRound,
     X
 } from "lucide-react";
 import useAlerts from "../hooks/useAlerts";
@@ -23,20 +22,21 @@ const MotionDiv = motion.div;
 const navigationItems = [
     { id: "overview", label: "Dashboard", icon: LayoutDashboard },
     { id: "alerts", label: "Alerts", icon: ShieldAlert },
-    { id: "timeline", label: "Timeline", icon: Clock3 },
     { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "status", label: "System Status", icon: Activity }
+    { id: "profile", label: "Profile", icon: UserRound }
 ];
 
 function AppShell({ user, token, onLogout }) {
     const [activePage, setActivePage] = useState("overview");
     const [menuOpen, setMenuOpen] = useState(false);
+    const [logoutPromptOpen, setLogoutPromptOpen] = useState(false);
     const { alerts, loading, liveAlert } = useAlerts(user?.id);
 
     useEffect(() => {
         function closeMenuOnEscape(event) {
             if (event.key === "Escape") {
                 setMenuOpen(false);
+                setLogoutPromptOpen(false);
             }
         }
 
@@ -48,13 +48,8 @@ function AppShell({ user, token, onLogout }) {
     }, []);
 
     function handleLogout() {
-        const shouldLogout = window.confirm(
-            "Are you sure you want to log out of Smart CCTV?"
-        );
-
-        if (shouldLogout) {
-            onLogout();
-        }
+        setMenuOpen(false);
+        setLogoutPromptOpen(true);
     }
 
     function navigateTo(page) {
@@ -106,6 +101,16 @@ function AppShell({ user, token, onLogout }) {
                             )}
                         </button>
                     ))}
+                    <div className="mobile-nav-actions">
+                        <div className="nav-system-status">
+                            <span className="nav-status-dot"></span>
+                            System Online
+                        </div>
+                        <button className="nav-logout" onClick={handleLogout} type="button">
+                            <LogOut size={15} strokeWidth={2} />
+                            Logout
+                        </button>
+                    </div>
                 </div>
 
                 <div className="cctv-nav-actions">
@@ -148,13 +153,53 @@ function AppShell({ user, token, onLogout }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.05, ease: "easeOut" }}
                 >
-                    {(activePage === "overview" || activePage === "status") && <Dashboard {...pageProps} />}
+                    {activePage === "overview" && <Dashboard {...pageProps} />}
                     {activePage === "alerts" && <AlertLogs {...pageProps} />}
-                    {activePage === "timeline" && <AlertLogs {...pageProps} />}
                     {activePage === "notifications" && <Notifications {...pageProps} />}
                     {activePage === "profile" && <Profile {...pageProps} />}
                 </MotionDiv>
             </main>
+
+            {logoutPromptOpen && (
+                <div
+                    className="logout-modal-backdrop"
+                    role="presentation"
+                    onMouseDown={event => {
+                        if (event.target === event.currentTarget) {
+                            setLogoutPromptOpen(false);
+                        }
+                    }}
+                >
+                    <div
+                        className="logout-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="logout-modal-title"
+                    >
+                        <div className="logout-modal-icon">
+                            <LogOut size={20} />
+                        </div>
+                        <h2 id="logout-modal-title">Log out of Smart CCTV?</h2>
+                        <p>Your monitoring session will end on this device.</p>
+                        <div className="logout-modal-actions">
+                            <button
+                                className="dashboard-button"
+                                onClick={() => setLogoutPromptOpen(false)}
+                                type="button"
+                            >
+                                Stay signed in
+                            </button>
+                            <button
+                                className="dashboard-button dashboard-button-danger"
+                                onClick={onLogout}
+                                type="button"
+                            >
+                                Log out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

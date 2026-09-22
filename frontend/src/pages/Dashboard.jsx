@@ -1,3 +1,4 @@
+import { ShieldAlert, UserCheck, Eye, ShieldCheck } from "lucide-react";
 import AlertCard from "../components/AlertCard";
 import CameraPanel from "../components/CameraPanel";
 import DevicePanel from "../components/DevicePanel";
@@ -10,12 +11,12 @@ function Dashboard({ alerts, loading, liveAlert, token }) {
 
     const currentAlert = liveAlert || alerts[0];
     const liveStatus = currentAlert?.severity === "HIGH"
-        ? { label: "High severity event detected", icon: "●", className: "live-threat" }
+        ? { label: "High severity event detected", icon: <ShieldAlert size={26} />, className: "live-threat" }
         : currentAlert?.alert_classification === "KNOWN_PERSON"
-            ? { label: `Known person: ${currentAlert.identity_name || "Recognized"}`, icon: "●", className: "live-known" }
+            ? { label: `Known person: ${currentAlert.identity_name || "Recognized"}`, icon: <UserCheck size={26} />, className: "live-known" }
             : currentAlert
-                ? { label: "Security activity being monitored", icon: "●", className: "live-unknown" }
-                : { label: "No active security events", icon: "●", className: "live-clear" };
+                ? { label: "Security activity being monitored", icon: <Eye size={26} />, className: "live-unknown" }
+                : { label: "No active security events", icon: <ShieldCheck size={26} />, className: "live-clear" };
 
     return (
         <div className="page-stack overview-page">
