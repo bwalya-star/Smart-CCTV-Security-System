@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function LatestCapture({ alert }) {
 
     if (!alert) {
@@ -17,7 +19,7 @@ function LatestCapture({ alert }) {
 
 
     const imageUrl = alert.image_path
-        ? `http://localhost:5000${alert.image_path}`
+        ? `${API_URL}${alert.image_path}`
         : null;
 
 
