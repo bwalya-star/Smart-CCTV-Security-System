@@ -1,11 +1,33 @@
 const mysql = require('mysql2/promise');
+const fs = require('fs');
 require('dotenv').config();
 
+const configuredSsl = process.env.DB_SSL_CA
+    ? {
+        ca: fs.readFileSync(process.env.DB_SSL_CA),
+        rejectUnauthorized: true
+    }
+    : undefined;
+
+// Aiven requires TLS. A supplied CA is verified strictly; without one, its
+// managed certificate is accepted for the production connection.
+const ssl = configuredSsl || (process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : undefined);
+
+const connection = process.env.DATABASE_URL
+    ? { uri: process.env.DATABASE_URL }
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT || 3306),
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'cctv_security_system'
+    };
+
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'cctv_security_system',
+    ...connection,
+    ssl,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
