@@ -7,6 +7,7 @@ import {
     Menu,
     Shield,
     ShieldAlert,
+    UsersRound,
     UserRound,
     X
 } from "lucide-react";
@@ -15,6 +16,7 @@ import Dashboard from "../pages/Dashboard";
 import AlertLogs from "../pages/AlertLogs";
 import Notifications from "../pages/Notifications";
 import Profile from "../pages/Profile";
+import AdminUsers from "../pages/AdminUsers";
 
 const MotionNav = motion.nav;
 const MotionDiv = motion.div;
@@ -31,6 +33,9 @@ function AppShell({ user, token, onLogout }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [logoutPromptOpen, setLogoutPromptOpen] = useState(false);
     const { alerts, loading, liveAlert } = useAlerts(user?.id);
+    const visibleNavigationItems = user?.role === "admin"
+        ? [...navigationItems, { id: "admin-users", label: "Manage Users", icon: UsersRound }]
+        : navigationItems;
 
     useEffect(() => {
         function closeMenuOnEscape(event) {
@@ -86,7 +91,7 @@ function AppShell({ user, token, onLogout }) {
                 </div>
 
                 <div className={`cctv-nav-links ${menuOpen ? "menu-open" : ""}`}>
-                    {navigationItems.map(item => (
+                    {visibleNavigationItems.map(item => (
                         <button
                             className={activePage === item.id ? "active" : ""}
                             key={item.id}
@@ -139,7 +144,7 @@ function AppShell({ user, token, onLogout }) {
                 <header className="shell-header">
                     <div>
                         <span className="eyebrow">SECURITY OPERATIONS</span>
-                        <h1>{navigationItems.find(item => item.id === activePage)?.label}</h1>
+                        <h1>{visibleNavigationItems.find(item => item.id === activePage)?.label}</h1>
                     </div>
                     <div className="header-status">
                         <span className="connection-dot"></span>
@@ -157,6 +162,7 @@ function AppShell({ user, token, onLogout }) {
                     {activePage === "alerts" && <AlertLogs {...pageProps} />}
                     {activePage === "notifications" && <Notifications {...pageProps} />}
                     {activePage === "profile" && <Profile {...pageProps} />}
+                    {activePage === "admin-users" && user?.role === "admin" && <AdminUsers {...pageProps} />}
                 </MotionDiv>
             </main>
 

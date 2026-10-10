@@ -112,6 +112,28 @@ async function getDeviceById(
         : null;
 }
 
+async function createDevice(userId, deviceName, deviceCode, deviceSecret) {
+    const query = `
+        INSERT INTO cctv_devices (
+            user_id,
+            device_name,
+            device_code,
+            device_secret,
+            is_active
+        )
+        VALUES (?, ?, ?, ?, 1)
+    `;
+
+    const [result] = await db.query(query, [
+        userId,
+        deviceName,
+        deviceCode,
+        deviceSecret
+    ]);
+
+    return result.insertId;
+}
+
 
 async function updateDeviceStatus(
     deviceId,
@@ -172,11 +194,22 @@ async function updateDeviceName(
     return result;
 }
 
+async function deleteDevice(deviceId, userId) {
+    const [result] = await db.query(
+        `DELETE FROM cctv_devices WHERE id = ? AND user_id = ?`,
+        [deviceId, userId]
+    );
+
+    return result;
+}
+
 
 module.exports = {
     authenticateDevice,
     getDevicesByUser,
     getDeviceById,
+    createDevice,
     updateDeviceStatus,
-    updateDeviceName
+    updateDeviceName,
+    deleteDevice
 };

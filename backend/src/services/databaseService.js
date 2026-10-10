@@ -140,7 +140,7 @@ async function createUser(name, email, passwordHash) {
 async function findUserByEmail(email) {
 
     const query = `
-        SELECT id, name, email, password_hash, role, created_at
+        SELECT id, name, email, password_hash, role, contact_phone, property_type, property_information, created_at
         FROM users
         WHERE email = ?
         LIMIT 1
@@ -160,7 +160,7 @@ async function findUserByEmail(email) {
 async function getUserById(userId) {
 
     const query = `
-        SELECT id, name, email, role, created_at
+        SELECT id, name, email, role, contact_phone, property_type, property_information, created_at
         FROM users
         WHERE id = ?
         LIMIT 1
@@ -177,11 +177,65 @@ async function getUserById(userId) {
 }
 
 
+async function createPasswordReset(userId, tokenHash, expiresAt) {
+    await db.query(
+        `UPDATE users
+         SET password_reset_token_hash = ?, password_reset_expires_at = ?
+         WHERE id = ?`,
+        [tokenHash, expiresAt, userId]
+    );
+}
+
+
+async function findValidPasswordReset(tokenHash) {
+    const [rows] = await db.query(
+        `SELECT id
+         FROM users
+         WHERE password_reset_token_hash = ?
+           AND password_reset_expires_at > NOW()
+         LIMIT 1`,
+        [tokenHash]
+    );
+
+    return rows[0] || null;
+}
+
+
+async function updatePasswordWithResetToken(tokenHash, passwordHash) {
+    const [result] = await db.query(
+        `UPDATE users
+         SET password_hash = ?,
+             password_reset_token_hash = NULL,
+             password_reset_expires_at = NULL
+         WHERE password_reset_token_hash = ?
+           AND password_reset_expires_at > NOW()`,
+        [passwordHash, tokenHash]
+    );
+
+    return result.affectedRows === 1;
+}
+
+
+async function clearPasswordReset(tokenHash) {
+    await db.query(
+        `UPDATE users
+         SET password_reset_token_hash = NULL,
+             password_reset_expires_at = NULL
+         WHERE password_reset_token_hash = ?`,
+        [tokenHash]
+    );
+}
+
+
 module.exports = {
     saveAlert,
     getAlerts,
     getAlertsByUser,
     createUser,
     findUserByEmail,
-    getUserById
+    getUserById,
+    createPasswordReset,
+    findValidPasswordReset,
+    updatePasswordWithResetToken,
+    clearPasswordReset
 };
