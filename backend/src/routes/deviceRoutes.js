@@ -4,7 +4,9 @@ const {
     getUserDevices,
     getSingleDevice,
     changeDeviceStatus,
-    renameDevice
+    renameDevice,
+    createUserDevice,
+    removeUserDevice
 } = require("../controllers/deviceController");
 
 const {
@@ -20,6 +22,12 @@ router.get(
     getUserDevices
 );
 
+router.post(
+    "/",
+    authenticateToken,
+    createUserDevice
+);
+
 
 router.get(
     "/:id",
@@ -32,6 +40,12 @@ router.patch(
     "/:id/status",
     authenticateToken,
     changeDeviceStatus
+);
+
+router.delete(
+    "/:id",
+    authenticateToken,
+    removeUserDevice
 );
 
 

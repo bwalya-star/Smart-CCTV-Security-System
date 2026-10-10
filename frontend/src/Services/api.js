@@ -1,6 +1,27 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const API_BASE_URL = `${API_URL}/api`;
 
+async function adminRequest(token, path, options = {}) {
+    const response = await fetch(`${API_BASE_URL}/admin${path}`, {
+        ...options,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...options.headers
+        }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Administrator request failed.");
+    return data;
+}
+
+export const getAccountRequests = token => adminRequest(token, "/account-requests");
+export const reviewAccountRequest = (token, id, decision) => adminRequest(token, `/account-requests/${id}/${decision}`, { method: "PATCH" });
+export const getManagedUsers = token => adminRequest(token, "/users");
+export const createManagedUser = (token, user) => adminRequest(token, "/users", { method: "POST", body: JSON.stringify(user) });
+export const updateManagedUser = (token, id, changes) => adminRequest(token, `/users/${id}`, { method: "PATCH", body: JSON.stringify(changes) });
+export const deleteManagedUser = (token, id) => adminRequest(token, `/users/${id}`, { method: "DELETE" });
+
 export const getAlerts = async () => {
     const token = localStorage.getItem("token");
 
@@ -84,6 +105,30 @@ export async function updateDeviceStatus(
     }
 
     return response.json();
+}
+
+export async function createDevice(token, device) {
+    const response = await fetch(`${API_BASE_URL}/devices`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(device)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Failed to add device");
+    return data;
+}
+
+export async function deleteDevice(token, deviceId) {
+    const response = await fetch(`${API_BASE_URL}/devices/${deviceId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Failed to remove device");
+    return data;
 }
 
 
@@ -194,32 +239,47 @@ export async function loginUser(
     password
 ) {
 
-    const response = await fetch(
-        `${API_BASE_URL}/auth/login`,
-        {
-            method: "POST",
+    let response;
+    try {
+        response = await fetch(
+            `${API_BASE_URL}/auth/login`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
+    } catch {
+        throw new Error("Unable to reach the sign-in service. Check your connection and try again.");
+    }
 
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                email,
-                password
-            })
-        }
-    );
-
-
-    const data =
-        await response.json();
+    let data = {};
+    try {
+        data = await response.json();
+    } catch {
+        data = {};
+    }
 
 
     if (!response.ok) {
+        const fallbackMessage = response.status === 400
+            ? "Check that your email and password are entered correctly."
+            : response.status === 401
+                ? "The email or password is incorrect."
+                : response.status === 503
+                    ? "Sign-in is temporarily unavailable. Please try again later."
+                    : response.status >= 500
+                        ? "We couldn't complete sign-in because of a server error. Please try again later."
+                        : "Sign-in could not be completed. Check your details and try again.";
 
         throw new Error(
             data.error ||
-            "Login failed."
+            fallbackMessage
         );
 
     }

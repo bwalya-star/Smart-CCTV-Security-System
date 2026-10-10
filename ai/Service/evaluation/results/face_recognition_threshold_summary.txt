@@ -8,4 +8,4 @@ Unknown test images: 1
 Thresholds tested: 0.40, 0.45, 0.50, 0.55, 0.60, 0.65
 
 Detailed results are stored in:
-C:\Users\HP\Desktop\Java\java script\Smart CCTV Security System\ai\Service\evaluation\results\face_recognition_threshold_results.csv
+ai/Service/evaluation/results/face_recognition_threshold_results.csv

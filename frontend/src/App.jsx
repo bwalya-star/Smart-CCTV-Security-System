@@ -13,7 +13,11 @@ function App() {
     const [user, setUser] = useState(null);
 
     const [checkingAuth, setCheckingAuth] = useState(true);
-    const [authView, setAuthView] = useState("landing");
+    const [authView, setAuthView] = useState(() =>
+        new URLSearchParams(window.location.search).has("resetToken")
+            ? "auth"
+            : "landing"
+    );
     const [authMode, setAuthMode] = useState("login");
 
     // ==========================================
@@ -23,6 +27,11 @@ function App() {
     useEffect(() => {
 
         async function checkAuthentication() {
+
+            if (new URLSearchParams(window.location.search).has("resetToken")) {
+                setCheckingAuth(false);
+                return;
+            }
 
             const token = localStorage.getItem("token");
 

@@ -2,16 +2,24 @@ const mysql = require('mysql2/promise');
 const fs = require('fs');
 require('dotenv').config();
 
-const configuredSsl = process.env.DB_SSL_CA
+const caPath = process.env.DB_SSL_CA;
+const configuredSsl = caPath && fs.existsSync(caPath)
     ? {
-        ca: fs.readFileSync(process.env.DB_SSL_CA),
+        ca: fs.readFileSync(caPath),
         rejectUnauthorized: true
     }
     : undefined;
 
+if (caPath && !configuredSsl) {
+    console.warn(`DB_SSL_CA file not found at "${caPath}"; using managed-certificate TLS for the remote database.`);
+}
+
+const remoteDatabase = Boolean(process.env.DATABASE_URL) ||
+    Boolean(process.env.DB_HOST && !["localhost", "127.0.0.1"].includes(process.env.DB_HOST));
+
 // Aiven requires TLS. A supplied CA is verified strictly; without one, its
 // managed certificate is accepted for the production connection.
-const ssl = configuredSsl || (process.env.NODE_ENV === 'production'
+const ssl = configuredSsl || (remoteDatabase
     ? { rejectUnauthorized: false }
     : undefined);
 

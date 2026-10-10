@@ -11,12 +11,14 @@ const authRoutes = require('./routes/authRoutes');
 const cameraRoutes = require('./routes/cameraRoutes');
 const deviceRoutes =
     require("./routes/deviceRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = (process.env.FRONTEND_URLS ||
-    "http://localhost:5173,http://localhost:4173")
-    .split(",")
+const allowedOrigins = [
+    ...(process.env.FRONTEND_URLS || "http://localhost:5173,http://localhost:4173").split(","),
+    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+]
     .map(origin => origin.trim())
     .filter(Boolean);
 const corsOptions = {
@@ -95,6 +97,7 @@ app.use(
     deviceRoutes
 );
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/camera', cameraRoutes); 
 
 app.get('/', (req, res) => {
