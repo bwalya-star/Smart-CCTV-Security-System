@@ -590,6 +590,23 @@ After configuring `backend/.env`, apply pending database migrations before start
 npx knex migrate:latest
 ```
 
+The dashboard's automatic camera schedule is saved in the database by the
+`camera_recording_schedules` migration. Schedules apply to the shared camera,
+repeat on the selected weekdays, and use the timezone shown in the dashboard.
+The dashboard also lists saved video files from `uploads/recordings`.
+In both the alert archive and recording list, select individual items or use
+the select-all control to bulk-delete them. Active recordings are protected
+from deletion until recording has stopped.
+
+The Profile page supports face enrollment with a name, relationship or role,
+optional notes, and 5–10 JPEG, PNG, or WebP photos. The AI service checks that
+each image contains one face and that the selected photos are visually distinct.
+Private enrollment images are stored under `ai/Service/face_data/enrolled_people`
+and excluded from version control. Apply the `enrolled_people` database migration
+before using enrollment.
+On first profile load, legacy face folders are imported as managed enrollments
+only when alert history associates that identity with exactly one account.
+
 Start the development server:
 
 ```powershell

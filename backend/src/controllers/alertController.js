@@ -6,6 +6,7 @@ const {
     saveAlert,
     getAlertsByUser
 } = require("../services/databaseService");
+const db = require("../config/db");
 
 const {
     sendNotification
@@ -34,6 +35,31 @@ async function getAlerts(req, res) {
             error: error.message
         });
 
+    }
+}
+
+async function deleteAlerts(req, res) {
+    const { ids } = req.body || {};
+
+    if (!Array.isArray(ids) ||
+        ids.length === 0 ||
+        ids.length > 200 ||
+        ids.some(id => !Number.isSafeInteger(id) || id < 1) ||
+        new Set(ids).size !== ids.length) {
+        return res.status(400).json({ error: "Provide a list of up to 200 unique valid alert IDs." });
+    }
+
+    try {
+        const placeholders = ids.map(() => "?").join(", ");
+        const [result] = await db.query(
+            `DELETE FROM alerts WHERE user_id = ? AND id IN (${placeholders})`,
+            [req.user.id, ...ids]
+        );
+
+        res.json({ deletedCount: result.affectedRows });
+    } catch (error) {
+        console.error("Unable to delete selected alerts:", error);
+        res.status(500).json({ error: "Unable to delete selected alerts." });
     }
 }
 
@@ -171,7 +197,7 @@ async function handleAlert(req, res) {
         // ==================================
 
         const result =
-            await detectPerson(imagePath);
+            await detectPerson(imagePath, userId);
 
         const detected =
             result.detected;
@@ -248,7 +274,7 @@ async function handleAlert(req, res) {
             notificationResult
         );
 
-        await saveAlert(
+        const savedAlert = await saveAlert(
             imagePath,
             detected,
             confidence,
@@ -283,6 +309,9 @@ async function handleAlert(req, res) {
             ).emit(
                 "new_alert",
                 {
+
+                    id:
+                        savedAlert.insertId,
 
                     image_path:
                         imagePath,
@@ -437,6 +466,7 @@ async function fetchAlerts(req, res) {
 
 module.exports = {
     getAlerts,
+    deleteAlerts,
     handleAlert,
     fetchAlerts,
     getEventTimeline

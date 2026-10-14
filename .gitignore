@@ -45,6 +45,7 @@ build/
 # Uploaded CCTV images
 # ================================
 uploads/
+ai/Service/face_data/enrolled_people/
 
 # ================================
 # Logs

@@ -54,7 +54,7 @@ def resolve_image_path(image_path):
     return image_path
 
 
-def detect_person(image_path):
+def detect_person(image_path, user_id=None):
 
     print("\n=================================")
     print("AI SERVICE")
@@ -181,7 +181,8 @@ def detect_person(image_path):
     try:
 
         face_result = face_recognition_module.recognize(
-            image_path
+            image_path,
+            user_id
         )
 
         print(

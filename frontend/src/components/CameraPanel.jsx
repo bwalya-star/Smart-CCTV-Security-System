@@ -4,6 +4,7 @@ import {
     stopRecording,
     getCameraStatus
 } from "../Services/api";
+import CameraSchedule from "./CameraSchedule";
 
 
 function CameraPanel({ token }) {
@@ -199,6 +200,8 @@ function CameraPanel({ token }) {
                 )}
 
             </div>
+
+            <CameraSchedule token={token} />
 
         </section>
 

@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Layers, Search, ShieldAlert, ShieldCheck, UserCheck, UserX, HelpCircle } from "lucide-react";
+import { Layers, Search, ShieldAlert, ShieldCheck, UserCheck, UserX, HelpCircle, Trash2 } from "lucide-react";
 import AlertDetailModal from "../components/AlertDetailModal";
+import { deleteAlerts } from "../Services/api";
 
 const MotionDiv = motion.div;
 
-function AlertLogs({ alerts, loading }) {
+function AlertLogs({ alerts, loading, token, removeAlerts }) {
     const [activeCategory, setActiveCategory] = useState("total");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedAlert, setSelectedAlert] = useState(null);
+    const [selectedAlertIds, setSelectedAlertIds] = useState([]);
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState("");
 
     const statistics = [
         ["Total Alerts", "total", alerts, "stat-neutral", <Layers size={16} />],
@@ -35,6 +39,49 @@ function AlertLogs({ alerts, loading }) {
             alert.detected ? "person detected" : "no person"
         ].some(value => String(value || "").toLowerCase().includes(query)))
         : categoryAlerts;
+    const filteredIds = filteredAlerts
+        .map(alert => Number(alert.id))
+        .filter(id => Number.isSafeInteger(id) && id > 0);
+    const allFilteredSelected = filteredIds.length > 0 &&
+        filteredIds.every(id => selectedAlertIds.includes(id));
+
+    function toggleAlertSelection(id) {
+        setSelectedAlertIds(current => current.includes(id)
+            ? current.filter(selectedId => selectedId !== id)
+            : [...current, id]);
+        setDeleteError("");
+    }
+
+    function toggleFilteredSelection() {
+        setSelectedAlertIds(current => allFilteredSelected
+            ? current.filter(id => !filteredIds.includes(id))
+            : [...new Set([...current, ...filteredIds])]);
+        setDeleteError("");
+    }
+
+    async function handleDeleteSelected() {
+        const selectedIds = selectedAlertIds.filter(id => alerts.some(alert => Number(alert.id) === id));
+        if (selectedIds.length === 0 || deleting) {
+            return;
+        }
+
+        if (!window.confirm(`Delete ${selectedIds.length} selected alert${selectedIds.length === 1 ? "" : "s"}? This cannot be undone.`)) {
+            return;
+        }
+
+        setDeleting(true);
+        setDeleteError("");
+        try {
+            await deleteAlerts(token, selectedIds);
+            removeAlerts(selectedIds);
+            setSelectedAlertIds(current => current.filter(id => !selectedIds.includes(id)));
+            setSelectedAlert(current => current && selectedIds.includes(Number(current.id)) ? null : current);
+        } catch (error) {
+            setDeleteError(error.message || "Unable to delete selected alerts.");
+        } finally {
+            setDeleting(false);
+        }
+    }
 
     if (loading) {
         return <div className="page-loading">Loading alert logs...</div>;
@@ -82,7 +129,28 @@ function AlertLogs({ alerts, loading }) {
                         <span className="eyebrow">ARCHIVE</span>
                         <h2>{statistics.find(item => item[1] === activeCategory)?.[0] || "Alert records"}</h2>
                     </div>
-                    <span className="muted-label">{filteredAlerts.length} records</span>
+                    <div className="alert-archive-actions">
+                        <span className="muted-label">{filteredAlerts.length} records</span>
+                        <button
+                            className="archive-selection-button"
+                            onClick={toggleFilteredSelection}
+                            type="button"
+                            disabled={filteredIds.length === 0 || deleting}
+                        >
+                            {allFilteredSelected ? "Deselect all" : "Select all"}
+                        </button>
+                        {selectedAlertIds.length > 0 && (
+                            <button
+                                className="archive-delete-button"
+                                onClick={handleDeleteSelected}
+                                type="button"
+                                disabled={deleting}
+                            >
+                                <Trash2 size={15} />
+                                {deleting ? "Deleting..." : `Delete selected (${selectedAlertIds.length})`}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="record-search">
@@ -96,26 +164,38 @@ function AlertLogs({ alerts, loading }) {
                     <button type="button" onClick={() => setSearchTerm("")}>Clear</button>
                 </div>
 
+                {deleteError && <p className="archive-delete-error" role="alert">{deleteError}</p>}
+
                 {filteredAlerts.length === 0 ? (
                     <div className="empty-panel"><span>No matching alert records found.</span></div>
                 ) : (
                     <div className="alert-record-list">
                         {filteredAlerts.map((alert, index) => (
-                            <button
+                            <div
                                 className="alert-record-row"
                                 key={alert.id || `${alert.created_at}-${index}`}
-                                onClick={() => setSelectedAlert(alert)}
-                                type="button"
                             >
+                                <input
+                                    className="alert-record-checkbox"
+                                    type="checkbox"
+                                    aria-label={`Select alert from ${alert.created_at ? new Date(alert.created_at).toLocaleString() : "unknown time"}`}
+                                    checked={selectedAlertIds.includes(Number(alert.id))}
+                                    disabled={!Number.isSafeInteger(Number(alert.id)) || Number(alert.id) < 1 || deleting}
+                                    onChange={() => toggleAlertSelection(Number(alert.id))}
+                                />
                                 <span className={`record-status-dot ${alert.status === "threat" ? "record-threat" : "record-safe"}`}></span>
-                                <span className="alert-record-main">
+                                <button
+                                    className="alert-record-main alert-record-open"
+                                    onClick={() => setSelectedAlert(alert)}
+                                    type="button"
+                                >
                                     <strong>{alert.detected ? "Person detected" : "No person detected"}</strong>
                                     <small>{alert.alert_classification || "Security event"}</small>
-                                </span>
+                                </button>
                                 <span className="alert-record-value">{alert.confidence !== null && alert.confidence !== undefined ? `${(Number(alert.confidence) * 100).toFixed(1)}%` : "N/A"}</span>
                                 <span className="alert-record-value">{alert.status || "Unknown"}</span>
                                 <time>{alert.created_at ? new Date(alert.created_at).toLocaleString() : "Unknown time"}</time>
-                            </button>
+                            </div>
                         ))}
                     </div>
                 )}

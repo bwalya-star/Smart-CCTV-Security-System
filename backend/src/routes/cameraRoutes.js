@@ -3,7 +3,11 @@ const express = require("express");
 const {
     getCameraStatus,
     startRecording,
-    stopRecording
+    stopRecording,
+    listRecordings,
+    deleteRecordings,
+    getRecordingSchedule,
+    updateRecordingSchedule
 } = require("../controllers/cameraController");
 
 const {
@@ -31,6 +35,29 @@ router.post(
     "/stop",
     authenticateToken,
     stopRecording
+);
+
+router.get(
+    "/recordings",
+    authenticateToken,
+    listRecordings
+);
+router.delete(
+    "/recordings",
+    authenticateToken,
+    deleteRecordings
+);
+
+router.get(
+    "/schedule",
+    authenticateToken,
+    getRecordingSchedule
+);
+
+router.put(
+    "/schedule",
+    authenticateToken,
+    updateRecordingSchedule
 );
 
 

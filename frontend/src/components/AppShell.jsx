@@ -32,7 +32,7 @@ function AppShell({ user, token, onLogout }) {
     const [activePage, setActivePage] = useState("overview");
     const [menuOpen, setMenuOpen] = useState(false);
     const [logoutPromptOpen, setLogoutPromptOpen] = useState(false);
-    const { alerts, loading, liveAlert } = useAlerts(user?.id);
+    const { alerts, loading, liveAlert, removeAlerts } = useAlerts(user?.id);
     const visibleNavigationItems = user?.role === "admin"
         ? [...navigationItems, { id: "admin-users", label: "Manage Users", icon: UsersRound }]
         : navigationItems;
@@ -66,6 +66,7 @@ function AppShell({ user, token, onLogout }) {
         alerts,
         loading,
         liveAlert,
+        removeAlerts,
         user,
         token,
         onNavigate: navigateTo

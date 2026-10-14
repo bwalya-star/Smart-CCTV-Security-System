@@ -4,7 +4,7 @@ const AI_SERVICE_URL =
     process.env.AI_SERVICE_URL ||
     "http://127.0.0.1:8001/api/detect";
 
-async function detectPerson(imagePath) {
+async function detectPerson(imagePath, userId) {
 
     try {
 
@@ -20,7 +20,8 @@ async function detectPerson(imagePath) {
         const response = await axios.post(
             AI_SERVICE_URL,
             {
-                imagePath: imagePath
+                imagePath,
+                userId
             },
             {
                 timeout: 30000

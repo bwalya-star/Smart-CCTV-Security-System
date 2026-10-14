@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Building2 } from "lucide-react";
 import DevicePanel from "../components/DevicePanel";
+import EnrolledPeople from "../components/EnrolledPeople";
 
 const MotionSection = motion.section;
 
@@ -56,6 +57,7 @@ function Profile({ user, token }) {
             </MotionSection>
 
             <DevicePanel token={token} />
+            <EnrolledPeople token={token} />
         </div>
     );
 }

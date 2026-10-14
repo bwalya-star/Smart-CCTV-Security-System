@@ -2,6 +2,7 @@ import AlertCard from "../components/AlertCard";
 import CameraPanel from "../components/CameraPanel";
 import DevicePanel from "../components/DevicePanel";
 import LatestCapture from "../components/LatestCapture";
+import RecordingLibrary from "../components/RecordingLibrary";
 
 function Dashboard({ alerts, loading, liveAlert, token }) {
     if (loading) {
@@ -38,6 +39,8 @@ function Dashboard({ alerts, loading, liveAlert, token }) {
                 </div>
                 {currentAlert ? <AlertCard alert={currentAlert} /> : <div className="empty-panel">No recent alerts found.</div>}
             </section>
+
+            <RecordingLibrary token={token} />
         </div>
     );
 }

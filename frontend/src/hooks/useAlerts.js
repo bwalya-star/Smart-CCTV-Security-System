@@ -36,6 +36,14 @@ export default function useAlerts(userId) {
         }
     }
 
+    function removeAlerts(ids) {
+        const deletedIds = new Set(ids);
+        setAlerts(currentAlerts => currentAlerts.filter(alert => !deletedIds.has(Number(alert.id))));
+        setLiveAlert(currentAlert => currentAlert && deletedIds.has(Number(currentAlert.id))
+            ? null
+            : currentAlert);
+    }
+
     useEffect(() => {
 
         loadAlerts();
@@ -94,6 +102,7 @@ export default function useAlerts(userId) {
     return {
         alerts,
         loading,
-        liveAlert
+        liveAlert,
+        removeAlerts
     };
 }
