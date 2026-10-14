@@ -12,6 +12,7 @@ const cameraRoutes = require('./routes/cameraRoutes');
 const deviceRoutes =
     require("./routes/deviceRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const peopleRoutes = require("./routes/peopleRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +24,7 @@ const allowedOrigins = [
     .filter(Boolean);
 const corsOptions = {
     origin: allowedOrigins,
-    methods: ["GET", "POST", "PATCH", "DELETE"]
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
 };
 
 const io = new Server(server, {
@@ -98,6 +99,7 @@ app.use(
 );
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/people', peopleRoutes);
 app.use('/api/camera', cameraRoutes); 
 
 app.get('/', (req, res) => {

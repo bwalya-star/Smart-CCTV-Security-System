@@ -1,4 +1,7 @@
 import os
+import json
+import re
+import threading
 import cv2
 import numpy as np
 import insightface
@@ -22,6 +25,12 @@ class FaceRecognitionModule:
             self.service_dir,
             "face_data",
             "known_faces"
+        )
+
+        self.enrolled_people_dir = os.path.join(
+            self.service_dir,
+            "face_data",
+            "enrolled_people"
         )
 
         self.encodings_dir = os.path.join(
@@ -70,6 +79,9 @@ class FaceRecognitionModule:
         # -----------------------------------------
         self.known_face_encodings = []
         self.known_face_names = []
+        self.known_face_user_ids = []
+        self.known_faces_signature = None
+        self.known_faces_lock = threading.RLock()
 
         self.load_known_faces()
 
@@ -77,89 +89,128 @@ class FaceRecognitionModule:
     # Load known faces
     # =============================================
     def load_known_faces(self):
+        with self.known_faces_lock:
+            self._load_known_faces()
 
+    def _load_known_faces(self):
         print("\nLoading known faces...")
+        self.known_face_encodings = []
+        self.known_face_names = []
+        self.known_face_user_ids = []
 
-        if not os.path.exists(self.known_faces_dir):
-            print("Known faces directory does not exist.")
-            return
+        legacy_identity_names = set()
+        if os.path.isdir(self.enrolled_people_dir):
+            for person_name in os.listdir(self.enrolled_people_dir):
+                if not re.fullmatch(r"user_\d+_person_\d+", person_name):
+                    continue
 
-        for person_name in os.listdir(self.known_faces_dir):
+                metadata_path = os.path.join(
+                    self.enrolled_people_dir,
+                    person_name,
+                    "person.json"
+                )
+                try:
+                    with open(metadata_path, "r", encoding="utf-8") as metadata_file:
+                        metadata = json.load(metadata_file)
+                    legacy_source = metadata.get("legacy_source")
+                    if isinstance(legacy_source, str) and legacy_source.strip():
+                        legacy_identity_names.add(legacy_source.strip().casefold())
+                except (OSError, ValueError, KeyError, TypeError) as error:
+                    print(f"Skipping invalid enrollment metadata {metadata_path}: {error}")
 
-            person_directory = os.path.join(
-                self.known_faces_dir,
-                person_name
-            )
+        datasets = [
+            (self.known_faces_dir, False),
+            (self.enrolled_people_dir, True)
+        ]
 
-            if not os.path.isdir(person_directory):
+        for dataset_directory, managed in datasets:
+            if not os.path.exists(dataset_directory):
                 continue
 
-            print(f"\nFound person: {person_name}")
+            for person_name in os.listdir(dataset_directory):
 
-            for filename in os.listdir(person_directory):
-
-                image_path = os.path.join(
-                    person_directory,
-                    filename
-                )
-
-                # Only process image files
-                if not filename.lower().endswith(
-                    (".jpg", ".jpeg", ".png")
+                if managed and not re.fullmatch(
+                    r"user_\d+_person_\d+",
+                    person_name
                 ):
                     continue
 
-                print(f"  Processing: {filename}")
+                person_directory = os.path.join(
+                    dataset_directory,
+                    person_name
+                )
 
-                try:
+                if not os.path.isdir(person_directory):
+                    continue
 
-                    image = cv2.imread(image_path)
+                if not managed and person_name.strip().casefold() in legacy_identity_names:
+                    print(f"Skipping legacy identity already managed by an account: {person_name}")
+                    continue
 
-                    if image is None:
-                        print("  Could not read image.")
+                display_name = person_name
+                owner_id = None
+
+                if managed:
+                    metadata_path = os.path.join(person_directory, "person.json")
+                    try:
+                        with open(metadata_path, "r", encoding="utf-8") as metadata_file:
+                            metadata = json.load(metadata_file)
+                        display_name = metadata["name"]
+                        owner_id = int(metadata["user_id"])
+                    except (OSError, ValueError, KeyError, TypeError) as error:
+                        print(f"Skipping invalid enrollment metadata {metadata_path}: {error}")
                         continue
 
-                    faces = self.app.get(image)
+                print(f"\nFound person: {display_name}")
 
-                    if len(faces) == 0:
-                        print("  No face detected.")
+                for filename in os.listdir(person_directory):
+
+                    image_path = os.path.join(
+                        person_directory,
+                        filename
+                    )
+
+                    if not filename.lower().endswith(
+                        (".jpg", ".jpeg", ".png", ".webp")
+                    ):
                         continue
 
-                    # Select the largest face
-                    face = max(
-                        faces,
-                        key=lambda f:
-                        (f.bbox[2] - f.bbox[0]) *
-                        (f.bbox[3] - f.bbox[1])
-                    )
+                    print(f"  Processing: {filename}")
 
-                    embedding = face.embedding
+                    try:
 
-                    # Normalize embedding
-                    embedding = embedding / np.linalg.norm(
-                        embedding
-                    )
+                        image = cv2.imread(image_path)
 
-                    self.known_face_encodings.append(
-                        embedding
-                    )
+                        if image is None:
+                            print("  Could not read image.")
+                            continue
 
-                    self.known_face_names.append(
-                        person_name
-                    )
+                        faces = self.app.get(image)
 
-                    print(
-                        f"  Face enrolled successfully: "
-                        f"{person_name}"
-                    )
+                        if len(faces) == 0:
+                            print("  No face detected.")
+                            continue
 
-                except Exception as error:
+                        face = max(
+                            faces,
+                            key=lambda f:
+                            (f.bbox[2] - f.bbox[0]) *
+                            (f.bbox[3] - f.bbox[1])
+                        )
 
-                    print(
-                        f"  Error processing {filename}: "
-                        f"{error}"
-                    )
+                        embedding = face.embedding
+                        embedding = embedding / np.linalg.norm(embedding)
 
+                        self.known_face_encodings.append(embedding)
+                        self.known_face_names.append(display_name)
+                        self.known_face_user_ids.append(owner_id)
+
+                        print(f"  Face enrolled successfully: {display_name}")
+
+                    except Exception as error:
+                        print(f"  Error processing {filename}: {error}")
+
+        self.known_faces_signature = self.get_known_faces_signature()
         print("\n========================================")
         print("KNOWN FACE LOADING COMPLETE")
         print("========================================")
@@ -174,10 +225,38 @@ class FaceRecognitionModule:
             len(self.known_face_names)
         )
 
+    def get_known_faces_signature(self):
+        signature = []
+        for dataset_directory in (self.known_faces_dir, self.enrolled_people_dir):
+            for current_directory, directories, filenames in os.walk(dataset_directory):
+                directories.sort()
+                filenames.sort()
+                try:
+                    directory_stat = os.stat(current_directory)
+                    signature.append((current_directory, directory_stat.st_mtime_ns))
+                except OSError:
+                    continue
+
+                for filename in filenames:
+                    file_path = os.path.join(current_directory, filename)
+                    try:
+                        file_stat = os.stat(file_path)
+                        signature.append((file_path, file_stat.st_mtime_ns, file_stat.st_size))
+                    except OSError:
+                        continue
+        return tuple(signature)
+
     # =============================================
     # Recognize a face
     # =============================================
-    def recognize(self, image_path):
+    def recognize(self, image_path, user_id=None):
+        signature = self.get_known_faces_signature()
+        with self.known_faces_lock:
+            if signature != self.known_faces_signature:
+                self._load_known_faces()
+            known_face_encodings = tuple(self.known_face_encodings)
+            known_face_names = tuple(self.known_face_names)
+            known_face_user_ids = tuple(self.known_face_user_ids)
 
         print("\n========================================")
         print("FACE RECOGNITION")
@@ -226,10 +305,14 @@ class FaceRecognitionModule:
             best_similarity = -1
             best_name = "unknown"
 
-            for known_embedding, known_name in zip(
-                self.known_face_encodings,
-                self.known_face_names
+            for known_embedding, known_name, known_user_id in zip(
+                known_face_encodings,
+                known_face_names,
+                known_face_user_ids
             ):
+
+                if known_user_id is not None and str(known_user_id) != str(user_id):
+                    continue
 
                 similarity = float(
                     np.dot(

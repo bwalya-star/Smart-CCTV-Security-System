@@ -3183,3 +3183,140 @@ video {
   .admin-wide-field, .admin-user-actions { grid-column: auto; }
   .account-request-modal { padding: 23px; }
 }
+
+.enrolled-people-section { display: grid; gap: 15px; }
+.enrollment-intro { max-width: 780px; color: #91a4b6; font-size: 12px; line-height: 1.6; }
+.enrollment-feedback { padding: 10px 12px; border-radius: 7px; font-size: 12px; overflow-wrap: anywhere; }
+.enrollment-feedback.error { border: 1px solid rgba(218, 93, 97, .35); color: #f0aaaa; background: rgba(218, 93, 97, .08); }
+.enrollment-feedback.success { border: 1px solid rgba(73, 187, 135, .3); color: #9ee4c1; background: rgba(73, 187, 135, .08); }
+.enrollment-form { display: grid; gap: 14px; padding: 17px; border: 1px solid #2b4056; border-radius: 10px; background: #142236; }
+.enrollment-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.enrollment-fields label { display: grid; gap: 6px; color: #a9bac9; font-size: 11px; }
+.enrollment-fields label span { display: inline; color: #71879a; }
+.enrollment-fields input, .enrollment-fields textarea { width: 100%; padding: 10px 11px; border: 1px solid #30465d; border-radius: 6px; color: #e3edf3; background: #111e2e; font: inherit; font-size: 12px; }
+.enrollment-fields textarea { resize: vertical; }
+.enrollment-fields input:focus, .enrollment-fields textarea:focus { border-color: #578b83; outline: 2px solid rgba(88, 160, 141, .15); }
+.enrollment-fields input::placeholder, .enrollment-fields textarea::placeholder { color: #71879a; }
+.enrollment-notes-field { grid-column: 1 / -1; }
+.enrollment-upload { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid #2a3d52; border-bottom: 1px solid #2a3d52; }
+.enrollment-upload > div > strong { display: flex; align-items: center; gap: 7px; color: #d8e6ee; font-size: 12px; }
+.enrollment-upload p { margin-top: 5px; color: #91a4b6; font-size: 11px; line-height: 1.5; }
+.enrollment-file-button { position: relative; display: inline-flex; flex: 0 0 auto; align-items: center; padding: 9px 12px; border: 1px solid #3c6a66; border-radius: 7px; color: #b8dfd5; background: #17353b; font-size: 11px; cursor: pointer; }
+.enrollment-file-button:hover { background: #20454a; }
+.enrollment-file-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.enrollment-file-button:focus-within { outline: 2px solid #8ccbbb; outline-offset: 2px; }
+.enrollment-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 9px; }
+.enrollment-photo { position: relative; min-width: 0; overflow: hidden; border: 1px solid #30465d; border-radius: 7px; background: #111e2e; }
+.enrollment-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.enrollment-photo > span { display: block; overflow: hidden; padding: 6px 25px 7px 7px; color: #a9bac9; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.enrollment-photo > button { position: absolute; top: 5px; right: 5px; display: grid; width: 23px; height: 23px; place-items: center; border: 1px solid rgba(0, 0, 0, .2); border-radius: 50%; color: white; background: rgba(12, 22, 34, .84); font-size: 17px; cursor: pointer; }
+.enrollment-photo > button:hover { background: #a33c44; }
+.enrollment-submit { display: inline-flex; width: fit-content; align-items: center; gap: 8px; margin-top: 0; }
+.enrollment-submit:disabled { opacity: .65; cursor: wait; }
+.enrolled-people-list { display: grid; gap: 9px; }
+.enrolled-people-list > h3 { display: flex; align-items: center; gap: 8px; color: #dce8f1; font-size: 13px; }
+.enrollment-empty { padding: 16px; border: 1px dashed #30465d; border-radius: 8px; color: #91a4b6; font-size: 12px; }
+.enrolled-people-list ul { display: grid; margin: 0; padding: 0; border: 1px solid #2b4056; border-radius: 9px; background: #142236; list-style: none; }
+.enrolled-person-row { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 13px; border-bottom: 1px solid #25384d; }
+.enrolled-person-row:last-child { border-bottom: 0; }
+.enrolled-person-avatar { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: #b8dfd5; background: #20434a; font-size: 15px; font-weight: 700; }
+.enrolled-person-details { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.enrolled-person-details strong { color: #e1ebf2; font-size: 12px; }
+.enrolled-person-details small { overflow: hidden; color: #91a4b6; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.unenroll-button { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid rgba(218, 93, 97, .4); border-radius: 6px; color: #f0aaaa; background: rgba(218, 93, 97, .08); font-size: 10px; cursor: pointer; }
+.unenroll-button:hover { background: rgba(218, 93, 97, .2); }
+.unenroll-button:disabled { opacity: .6; cursor: wait; }
+
+@media (max-width: 600px) {
+  .enrollment-fields { grid-template-columns: 1fr; }
+  .enrollment-notes-field { grid-column: auto; }
+  .enrollment-upload { align-items: flex-start; flex-direction: column; }
+  .enrolled-person-row { gap: 9px; padding: 10px; }
+  .unenroll-button { padding: 7px; }
+  .unenroll-button svg { display: none; }
+}
+
+.recordings-section { margin-top: 2px; }
+.recording-heading-actions { display: flex; align-items: center; gap: 12px; }
+.recording-refresh { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid #30465d; border-radius: 6px; color: #b9cbd8; background: #142236; font-size: 11px; cursor: pointer; }
+.recording-refresh:hover { border-color: #527a9b; color: #e2edf4; }
+.recording-refresh:disabled, .recording-delete-button:disabled, .archive-selection-button:disabled, .archive-delete-button:disabled { opacity: .55; cursor: not-allowed; }
+.recording-delete-button, .archive-delete-button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid rgba(218, 93, 97, .48); border-radius: 6px; color: #f0aaaa; background: rgba(218, 93, 97, .1); font-size: 11px; cursor: pointer; }
+.recording-delete-button:hover, .archive-delete-button:hover { border-color: #da5d61; background: rgba(218, 93, 97, .2); }
+.recording-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.recording-list-item-row { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #2b4056; border-radius: 9px; background: #142236; }
+.recording-list-item-row.recording-current { border-color: rgba(218, 93, 97, .44); }
+.recording-list-item { display: flex; width: 100%; min-width: 0; align-items: center; gap: 13px; padding: 6px 4px; border: 0; color: #dce8f1; background: transparent; text-align: left; cursor: pointer; transition: color .18s ease; }
+.recording-list-item:hover { border-color: #527a9b; background: #192b40; }
+.recording-list-item-row:hover { border-color: #527a9b; background: #192b40; }
+.recording-list-item-row:hover .recording-list-item { background: transparent; }
+.recording-checkbox, .alert-record-checkbox { accent-color: #54a88d; cursor: pointer; }
+.recording-checkbox { width: 15px; height: 15px; justify-self: center; }
+.recording-checkbox:disabled { cursor: not-allowed; }
+.recording-delete-feedback { margin-bottom: 10px; color: #b9cbd8; font-size: 12px; overflow-wrap: anywhere; }
+.recording-file-icon { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; border-radius: 8px; color: #9ad5c6; background: rgba(63, 150, 128, .14); }
+.recording-list-copy { display: grid; min-width: 0; flex: 1; gap: 5px; }
+.recording-list-copy strong { color: #e7eff5; font-size: 13px; }
+.recording-list-copy small { overflow: hidden; color: #91a4b6; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.recording-play { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; color: #a8ddd0; font-size: 12px; font-weight: 600; }
+.recording-error { color: #f0aaaa; }
+.recording-modal-backdrop { position: fixed; z-index: 1500; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 24px; background: rgba(3, 10, 19, .82); }
+.recording-modal { width: min(900px, 100%); padding: 22px; border: 1px solid #30465d; border-radius: 14px; background: #111e2e; box-shadow: 0 24px 75px rgba(0, 0, 0, .48); }
+.recording-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+.recording-modal-header h2 { margin: 4px 0; color: #e8f0f6; font-size: 19px; }
+.recording-modal-header p { color: #91a4b6; font-size: 12px; overflow-wrap: anywhere; }
+.recording-video { display: block; width: 100%; max-height: min(65vh, 580px); border-radius: 9px; background: #030712; }
+.recording-playback-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 14px; }
+.recording-playback-tools button, .recording-playback-tools label { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid #30465d; border-radius: 7px; color: #d7e4ed; background: #17273a; font-size: 12px; }
+.recording-playback-tools button { cursor: pointer; }
+.recording-playback-tools button:hover { border-color: #59816f; }
+.recording-playback-tools label { margin-left: auto; }
+.recording-playback-tools select { border: 0; color: #e3ecef; background: transparent; }
+.recording-playback-tools option { color: #172033; }
+.recording-playback-error { margin-top: 9px; color: #f0aaaa; font-size: 12px; }
+.recording-playback-error a { color: #b5d7f4; }
+.camera-schedule { display: grid; gap: 14px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #2a3d52; }
+.schedule-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.schedule-heading h3 { color: #e2ecf3; font-size: 15px; }
+.schedule-heading p { margin-top: 4px; color: #91a4b6; font-size: 12px; }
+.schedule-enabled { display: flex; align-items: center; gap: 8px; color: #c6d5df; font-size: 12px; cursor: pointer; }
+.schedule-enabled input, .schedule-day input { accent-color: #54a88d; }
+.schedule-time-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.schedule-time-fields label { display: grid; gap: 6px; color: #a9bac9; font-size: 11px; }
+.schedule-time-fields input { min-width: 0; padding: 9px 10px; border: 1px solid #30465d; border-radius: 6px; color: #e3edf3; background: #111e2e; }
+.schedule-weekdays { min-width: 0; border: 0; }
+.schedule-weekdays legend { margin-bottom: 8px; color: #a9bac9; font-size: 11px; }
+.schedule-weekdays > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.schedule-day { cursor: pointer; }
+.schedule-day input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.schedule-day span { display: inline-flex; min-width: 43px; justify-content: center; padding: 7px 9px; border: 1px solid #30465d; border-radius: 6px; color: #a9bac9; font-size: 11px; }
+.schedule-day input:checked + span { border-color: #448b7e; color: #b7e6d7; background: rgba(58, 144, 123, .16); }
+.schedule-day input:focus-visible + span { outline: 2px solid #8ccbbb; outline-offset: 2px; }
+.schedule-timezone, .schedule-feedback { color: #91a4b6; font-size: 11px; }
+.schedule-feedback.error { color: #f0aaaa; }
+.schedule-feedback.success { color: #94d6b3; }
+.schedule-save { justify-self: start; }
+.alert-archive-actions { display: flex; align-items: center; gap: 9px; }
+.archive-selection-button { padding: 7px 9px; border: 1px solid #30465d; border-radius: 6px; color: #b9cbd8; background: #142236; font-size: 11px; cursor: pointer; }
+.archive-selection-button:hover { border-color: #527a9b; color: #e2edf4; }
+.alert-record-row { grid-template-columns: 18px 10px minmax(150px, 1fr) 100px 90px minmax(150px, auto); cursor: default; }
+.alert-record-checkbox { width: 15px; height: 15px; justify-self: center; }
+.alert-record-open { width: 100%; padding: 0; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; font: inherit; }
+.alert-record-open:hover strong { color: #a9d9d2; }
+.alert-record-open:focus-visible { outline: 2px solid #8ccbbb; outline-offset: 3px; border-radius: 3px; }
+.alert-record-row:hover .alert-record-open { background: transparent; }
+.archive-delete-error { margin: -5px 0 14px; color: #f0aaaa; font-size: 12px; }
+
+@media (max-width: 600px) {
+  .recording-modal-backdrop { padding: 12px; }
+  .recording-modal { padding: 16px; }
+  .recording-list-item-row { gap: 7px; padding: 8px; }
+  .recording-list-item { padding: 5px 1px; }
+  .recording-heading-actions, .alert-archive-actions { flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+  .recording-play { font-size: 0; }
+  .recording-play svg { width: 19px; height: 19px; }
+  .schedule-heading { align-items: flex-start; }
+  .schedule-time-fields { grid-template-columns: 1fr; }
+  .alert-record-row { grid-template-columns: 18px 9px minmax(0, 1fr) 68px; gap: 8px; }
+  .alert-record-row .alert-record-value:last-of-type, .alert-record-row time { display: none; }
+}

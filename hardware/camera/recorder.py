@@ -80,22 +80,28 @@ class CameraRecorder:
 
         self.output_path = os.path.join(
             recordings_dir,
-            f"recording_{timestamp}.avi"
+            f"recording_{timestamp}.webm"
         )
-
-
-        # Video codec
-        fourcc = cv2.VideoWriter_fourcc(
-            *"XVID"
-        )
-
 
         self.video_writer = cv2.VideoWriter(
             self.output_path,
-            fourcc,
+            cv2.VideoWriter_fourcc(*"VP90"),
             fps,
             (width, height)
         )
+
+        if not self.video_writer.isOpened():
+            self.video_writer.release()
+            self.output_path = os.path.join(
+                recordings_dir,
+                f"recording_{timestamp}.avi"
+            )
+            self.video_writer = cv2.VideoWriter(
+                self.output_path,
+                cv2.VideoWriter_fourcc(*"XVID"),
+                fps,
+                (width, height)
+            )
 
 
         if not self.video_writer.isOpened():

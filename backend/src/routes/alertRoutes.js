@@ -8,6 +8,7 @@ const {
 const router = express.Router();
 const {
     getAlerts,
+    deleteAlerts,
     handleAlert,
     fetchAlerts,
     getEventTimeline
@@ -17,6 +18,11 @@ router.get(
     "/",
     authenticateToken,
     getAlerts
+);
+router.delete(
+    "/",
+    authenticateToken,
+    deleteAlerts
 );
 router.get(
     "/timeline",

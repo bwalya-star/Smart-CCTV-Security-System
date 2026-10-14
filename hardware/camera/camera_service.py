@@ -44,6 +44,10 @@ def start_recording():
         flush=True
     )
 
+    print(
+        f"RECORDING_FILE:{os.path.basename(recorder.output_path)}",
+        flush=True
+    )
 
     try:
 
