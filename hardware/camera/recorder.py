@@ -91,6 +91,7 @@ class CameraRecorder:
         )
 
         if not self.video_writer.isOpened():
+            # Fall back to a widely supported container/codec when WebM is unavailable.
             self.video_writer.release()
             self.output_path = os.path.join(
                 recordings_dir,

@@ -92,6 +92,7 @@ async function enforceMotionDetectionFailSafe() {
             return;
         }
 
+        // Keep the check and update together so repeated timer ticks cannot re-enable twice per day.
         const [result] = await db.query(
             `UPDATE camera_motion_settings
              SET enabled = TRUE, last_failsafe_date = ?, updated_at = CURRENT_TIMESTAMP

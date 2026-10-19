@@ -98,6 +98,7 @@ function stopCameraRecording() {
     }
 
     const processToStop = cameraProcess;
+    // The Python recorder watches this marker so the Node process can request a graceful shutdown.
     fs.writeFileSync(stopFile, "STOP");
     stopping = true;
     clearTimeout(stopTimeout);

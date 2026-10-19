@@ -26,6 +26,7 @@ function EnrolledPeople({ token }) {
     );
 
     useEffect(() => () => {
+        // Release browser-managed preview URLs when the selection changes or the component unmounts.
         selectedImagePreviews.forEach(preview => URL.revokeObjectURL(preview.url));
     }, [selectedImagePreviews]);
 

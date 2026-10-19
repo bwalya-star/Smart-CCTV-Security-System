@@ -53,7 +53,7 @@ def start_recording():
 
         while recorder.recording:
 
-            # Check whether Node.js requested STOP
+            # A marker file is the stop signal shared with the Node.js process.
             if os.path.exists(STOP_FILE):
 
                 print(

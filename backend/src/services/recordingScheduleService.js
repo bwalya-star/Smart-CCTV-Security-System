@@ -1,4 +1,5 @@
 function getLocalDateTime(timeZone, date) {
+    // Format in the configured zone; UTC/local machine time can differ from camera schedule time.
     const parts = new Intl.DateTimeFormat("en-US", {
         timeZone,
         weekday: "short",
@@ -47,6 +48,7 @@ function getScheduleWindow(schedule, now = new Date()) {
             return { key: local.date };
         }
 
+        // After midnight, the active window still belongs to the weekday on which it started.
         const previousDay = (local.weekday + 6) % 7;
         if (local.minuteOfDay < end && schedule.days.includes(previousDay)) {
             return { key: getPreviousDateKey(local.date) };

@@ -60,6 +60,7 @@ export default function useAlerts(userId) {
         function joinUserRoom() {
 
             if (userId) {
+                // The server derives the room identity from the verified socket token.
                 socket.emit(
                     "join_user_room",
                     userId
