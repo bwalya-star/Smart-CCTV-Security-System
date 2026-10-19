@@ -7,6 +7,8 @@ import {
     Menu,
     Shield,
     ShieldAlert,
+    Sun,
+    Moon,
     UsersRound,
     UserRound,
     X
@@ -32,6 +34,10 @@ function AppShell({ user, token, onLogout }) {
     const [activePage, setActivePage] = useState("overview");
     const [menuOpen, setMenuOpen] = useState(false);
     const [logoutPromptOpen, setLogoutPromptOpen] = useState(false);
+    const [theme, setTheme] = useState(() => {
+        const savedTheme = localStorage.getItem("smart-cctv-theme");
+        return savedTheme === "light" ? "light" : "dark";
+    });
     const { alerts, loading, liveAlert, removeAlerts } = useAlerts(user?.id);
     const visibleNavigationItems = user?.role === "admin"
         ? [...navigationItems, { id: "admin-users", label: "Manage Users", icon: UsersRound }]
@@ -51,6 +57,28 @@ function AppShell({ user, token, onLogout }) {
             window.removeEventListener("keydown", closeMenuOnEscape);
         };
     }, []);
+
+    useEffect(() => {
+        document.documentElement.dataset.theme = theme;
+        localStorage.setItem("smart-cctv-theme", theme);
+    }, [theme]);
+
+    function renderThemeToggle() {
+        const nextTheme = theme === "dark" ? "light" : "dark";
+        const ThemeIcon = nextTheme === "light" ? Sun : Moon;
+
+        return (
+            <button
+                className="nav-theme-toggle"
+                onClick={() => setTheme(nextTheme)}
+                type="button"
+                aria-label={`Switch to ${nextTheme} mode`}
+                title={`Switch to ${nextTheme} mode`}
+            >
+                <ThemeIcon size={17} strokeWidth={2} />
+            </button>
+        );
+    }
 
     function handleLogout() {
         setMenuOpen(false);
@@ -112,6 +140,7 @@ function AppShell({ user, token, onLogout }) {
                             <span className="nav-status-dot"></span>
                             System Online
                         </div>
+                        {renderThemeToggle()}
                         <button className="nav-logout" onClick={handleLogout} type="button">
                             <LogOut size={15} strokeWidth={2} />
                             Logout
@@ -124,6 +153,7 @@ function AppShell({ user, token, onLogout }) {
                         <span className="nav-status-dot"></span>
                         System Online
                     </div>
+                    {renderThemeToggle()}
                     <button className="nav-logout" onClick={handleLogout} type="button">
                         <LogOut size={15} strokeWidth={2} />
                         Logout

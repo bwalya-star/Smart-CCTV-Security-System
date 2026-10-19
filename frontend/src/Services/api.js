@@ -249,6 +249,35 @@ export async function getCameraStatus(token) {
     return response.json();
 }
 
+export async function getMotionDetectionSettings(token) {
+    const response = await fetch(`${API_BASE_URL}/camera/motion`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load motion detection settings");
+    }
+    return data.motionDetection;
+}
+
+export async function updateMotionDetectionSettings(token, settings) {
+    const response = await fetch(`${API_BASE_URL}/camera/motion`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(settings)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to update motion detection settings");
+    }
+    return data.motionDetection;
+}
+
 
 export async function loginUser(
     email,

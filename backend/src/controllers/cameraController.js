@@ -3,6 +3,10 @@ const path = require("path");
 const fs = require("fs");
 const db = require("../config/db");
 const { getScheduleWindow } = require("../services/recordingScheduleService");
+const {
+    getMotionDetectionSettings,
+    saveMotionDetectionSettings
+} = require("../services/motionDetectionService");
 
 let recording = false;
 let recordingSource = null;
@@ -320,6 +324,46 @@ async function updateRecordingSchedule(req, res) {
     }
 }
 
+async function getMotionSettings(req, res) {
+    try {
+        res.json({ motionDetection: await getMotionDetectionSettings() });
+    } catch (error) {
+        console.error("Unable to load motion detection settings:", error);
+        res.status(500).json({ error: "Unable to load motion detection settings" });
+    }
+}
+
+async function updateMotionSettings(req, res) {
+    const { enabled, failsafeEnabled, failsafeTime, timeZone } = req.body || {};
+    const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+
+    if (typeof enabled !== "boolean" ||
+        typeof failsafeEnabled !== "boolean" ||
+        !timePattern.test(failsafeTime) ||
+        typeof timeZone !== "string" ||
+        timeZone.length > 64) {
+        return res.status(400).json({ error: "Provide valid motion detection settings." });
+    }
+
+    try {
+        new Intl.DateTimeFormat("en-US", { timeZone }).format(new Date());
+        const motionDetection = await saveMotionDetectionSettings({
+            enabled,
+            failsafeEnabled,
+            failsafeTime,
+            timeZone
+        }, req.user.id);
+        res.json({ motionDetection });
+    } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).json({ error: "The timezone is not valid." });
+        }
+
+        console.error("Unable to save motion detection settings:", error);
+        res.status(500).json({ error: "Unable to save motion detection settings" });
+    }
+}
+
 setInterval(enforceRecordingSchedule, 15000);
 enforceRecordingSchedule();
 
@@ -330,5 +374,7 @@ module.exports = {
     listRecordings,
     deleteRecordings,
     getRecordingSchedule,
-    updateRecordingSchedule
+    updateRecordingSchedule,
+    getMotionSettings,
+    updateMotionSettings
 };

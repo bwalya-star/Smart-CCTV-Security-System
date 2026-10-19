@@ -7,6 +7,7 @@ const {
     getAlertsByUser
 } = require("../services/databaseService");
 const db = require("../config/db");
+const { isMotionDetectionEnabled } = require("../services/motionDetectionService");
 
 const {
     sendNotification
@@ -181,6 +182,13 @@ async function handleAlert(req, res) {
 
         const userId =
             device.user_id;
+
+        if (!await isMotionDetectionEnabled()) {
+            return res.json({
+                ignored: true,
+                message: "Motion detection is disabled."
+            });
+        }
 
         console.log(
             "Device ID:",

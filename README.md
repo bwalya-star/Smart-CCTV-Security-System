@@ -593,6 +593,11 @@ npx knex migrate:latest
 The dashboard's automatic camera schedule is saved in the database by the
 `camera_recording_schedules` migration. Schedules apply to the shared camera,
 repeat on the selected weekdays, and use the timezone shown in the dashboard.
+Motion detection can be paused from the camera controls; events received while
+it is paused are acknowledged without running AI detection or creating alerts.
+The daily fail-safe can automatically re-enable it at a configured local time.
+These settings are shared by the system and stored by the
+`camera_motion_settings` migration.
 The dashboard also lists saved video files from `uploads/recordings`.
 In both the alert archive and recording list, select individual items or use
 the select-all control to bulk-delete them. Active recordings are protected
