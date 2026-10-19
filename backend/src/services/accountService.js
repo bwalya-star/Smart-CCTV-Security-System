@@ -51,6 +51,7 @@ async function getAccountRequests() {
 async function reviewAccountRequest(requestId, reviewerId, decision) {
     const connection = await db.getConnection();
     try {
+        // Lock the pending request so concurrent admin reviews cannot approve it twice.
         await connection.beginTransaction();
         const [rows] = await connection.query(
             "SELECT * FROM account_requests WHERE id = ? FOR UPDATE",
@@ -83,6 +84,7 @@ async function reviewAccountRequest(requestId, reviewerId, decision) {
             userId = created.insertId;
         }
 
+        // Remove the stored password hash after the decision; it is no longer needed.
         await connection.query(
             "UPDATE account_requests SET status = ?, password_hash = '', reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP WHERE id = ? AND status = 'pending'",
             [decision, reviewerId, requestId]

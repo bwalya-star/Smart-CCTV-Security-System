@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
     socket.on(
         "join_user_room",
         () => {
+            // Never trust a room ID supplied by the client; bind delivery to the verified JWT identity.
             const room =
                 `user_${socket.user.id}`;
 

@@ -79,6 +79,7 @@ def validate_enrollment():
 
             image_bytes = base64.b64decode(encoded_image, validate=True)
             total_bytes += len(image_bytes)
+            # Enforce both limits before decoding buffers to avoid excessive memory use.
             if len(image_bytes) > 4 * 1024 * 1024 or total_bytes > 20 * 1024 * 1024:
                 raise ValueError("Uploaded images exceed the allowed size.")
 
@@ -94,6 +95,7 @@ def validate_enrollment():
                 raise ValueError("Each image must contain exactly one clear face.")
 
             embedding = faces[0].embedding
+            # Unit-length embeddings make the dot product comparable to cosine similarity.
             embedding = embedding / np.linalg.norm(embedding)
             face_embeddings.append(embedding)
 
@@ -105,12 +107,14 @@ def validate_enrollment():
             perceptual_hash = low_frequency > median
             decoded_images.append(perceptual_hash)
 
+        # Reject duplicate/near-duplicate views before checking that all faces match.
         for index, image_hash in enumerate(decoded_images):
             for previous_hash in decoded_images[:index]:
                 if np.count_nonzero(image_hash != previous_hash) <= 4:
                     raise ValueError("The images must be different views; duplicate or near-identical photos were found.")
 
         threshold = face_recognition_module.recognition_threshold
+        # Enrollment photos must be similar to one another, not merely individually detectable.
         for index, embedding in enumerate(face_embeddings):
             for previous_embedding in face_embeddings[:index]:
                 if float(np.dot(embedding, previous_embedding)) < threshold:
