@@ -56,4 +56,4 @@ function getScheduleWindow(schedule, now = new Date()) {
     return null;
 }
 
-module.exports = { getScheduleWindow };
+module.exports = { getLocalDateTime, getScheduleWindow };

@@ -1,7 +1,6 @@
 import AlertCard from "../components/AlertCard";
 import CameraPanel from "../components/CameraPanel";
 import DevicePanel from "../components/DevicePanel";
-import LatestCapture from "../components/LatestCapture";
 import RecordingLibrary from "../components/RecordingLibrary";
 
 function Dashboard({ alerts, loading, liveAlert, token }) {
@@ -26,7 +25,6 @@ function Dashboard({ alerts, loading, liveAlert, token }) {
 
             <div className="camera-grid">
                 <CameraPanel token={token} />
-                <LatestCapture alert={alerts[0]} />
             </div>
 
             <section className="section-block recent-alert-section">

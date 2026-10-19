@@ -7,7 +7,9 @@ const {
     listRecordings,
     deleteRecordings,
     getRecordingSchedule,
-    updateRecordingSchedule
+    updateRecordingSchedule,
+    getMotionSettings,
+    updateMotionSettings
 } = require("../controllers/cameraController");
 
 const {
@@ -58,6 +60,18 @@ router.put(
     "/schedule",
     authenticateToken,
     updateRecordingSchedule
+);
+
+router.get(
+    "/motion",
+    authenticateToken,
+    getMotionSettings
+);
+
+router.put(
+    "/motion",
+    authenticateToken,
+    updateMotionSettings
 );
 
 
